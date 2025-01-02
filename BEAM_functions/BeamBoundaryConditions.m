@@ -7,7 +7,7 @@ function [u_hat,If,Ip] = BeamBoundaryConditions(xn,Tn,Up)
 u_hat = zeros (NDOFs,1);
 
 % 4.2 Prescribed and free DOF's
-for p=1:size(Up)
+for p=1:size(Up,1)
     Ip(p) = 6*(Up(p,2)-1) + Up(p,3);
     u_hat(Ip(p),1) = Up(p,1);
 end

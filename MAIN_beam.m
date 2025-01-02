@@ -11,9 +11,9 @@ b = 12; % [m]
 y0 = 0.725; % [m]
 y1 = 0.4; % [m]
 y2 = 1.2; % [m]
-h1 = 0.040; % [mm]
-h2 = 0.030; % [mm]
-h3 = 0.004; % [mm]
+h1 = 0.040; % [m]
+h2 = 0.030; % [m]
+h3 = 0.004; % [m]
 
 
 % Materials arrays
@@ -86,7 +86,7 @@ save('RESULTS/beam_matrices.mat','K','M');
 [u_hat,If,Ip] = BeamBoundaryConditions(xn,Tn,Up);
 
 % Solve system
-u_hat(If,1) = inv(K(If,If))*(f_hat(If,1)-(K(If,Ip)*u_hat(Ip,1)));
+u_hat(If,1) = K(If,If)\(f_hat(If,1)-(K(If,Ip)*u_hat(Ip,1)));
 fr = K*u_hat - f_hat;
 
 

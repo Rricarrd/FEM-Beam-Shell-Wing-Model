@@ -80,10 +80,13 @@ Pe = [];
 %% SOLVER
 
 % Obtain system matrices
-[K,M,R] = ShellGlobalMatricesAssembly(xn,Tn,Tm,m);
+[K,M,R,Me,S4,N] = ShellGlobalMatricesAssembly(xn,Tn,Tm,m);
+
+% Compute artificial rotation stiffness matrix
+[K] = CompArtifRotatStiffMatr(Nnodes,Nel,NDOFs,K,Tn,xn,Tm,m);
 
 % Save matrices K and M
-save('RESULTS/shell_matrices.mat','K','M'); 
+%save('RESULTS/shell_matrices.mat','K','M'); 
 
 
 
@@ -91,7 +94,7 @@ save('RESULTS/shell_matrices.mat','K','M');
 % ...
 
 % Compute external forces vector
-% ...
+[f_hat] = ShellGlobForceVec(Nnodes,Nel,NDOFs,Tn,xn,Fe,Pe,Be,Me,S4,R,N);
 
 % Solve system
 % ...

@@ -5,19 +5,19 @@ function [f_hat] = BeamGlobalForceVector(xn,Tn,Fe,Be,Qe,R,Me,l)
 
 % 3.1 Point loads
 f_hat = zeros(NDOFs,1);
-for q=1:size(Fe)
+for q=1:size(Fe,1)
     f_hat((6*(Fe(q,2)-1)+Fe(q,3)),1) = f_hat((6*(Fe(q,2)-1)+Fe(q,3)),1)+Fe(q,1);
 end
 
 % 3.3 Distributed forces
 Q =  zeros(Nnodes,6);
-for r=1:size(Qe)
+for r=1:size(Qe,1)
     Q(Qe(r,2),Qe(r,3)) = Q(Qe(r,2),Qe(r,3)) + Qe(r,1);
 end
 
 % 3.3 Body forces
 B =  zeros(Nnodes,6);
-for s=1:size(Be)
+for s=1:size(Be,1)
     B(Be(s,2),Be(s,3)) = B(Be(s,2),Be(s,3)) + Be(s,1);
 end
 

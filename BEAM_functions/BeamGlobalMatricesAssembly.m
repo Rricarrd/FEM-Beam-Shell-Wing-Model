@@ -1,8 +1,8 @@
 function [K,M,R,l,Me,Ke,Ba,Bb,Bs,Bt]= BeamGlobalMatricesAssembly(xn,Tn,Tm,m) 
 % Variables and preallocation
 [~,Nel,NDOFs] = GetDiscretization(xn,Tn);
-K=zeros(NDOFs,NDOFs);
-M=zeros(NDOFs,NDOFs);
+K=sparse(NDOFs,NDOFs);
+M=sparse(NDOFs,NDOFs);
 
 % Loop over each element to assemble the global matrices
 for e=1:Nel

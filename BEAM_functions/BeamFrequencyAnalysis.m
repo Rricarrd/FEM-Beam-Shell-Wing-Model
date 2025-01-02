@@ -3,10 +3,6 @@ function [U,pd_,pm_,frequencies] = BeamFrequencyAnalysis(Nm,xn,Tn,Fe,Be,Qe,Nw,Ip
 % Variables
 [~,Nel,NDOFs] = GetDiscretization(xn,Tn);
 
-% Sparse matrices
-K = sparse(K);
-M = sparse(M);
-
 % 2.1 Initialization
 omega = 1:Nw;
 F = zeros(NDOFs,Nw);
