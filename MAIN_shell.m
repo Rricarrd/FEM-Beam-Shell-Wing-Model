@@ -3,6 +3,7 @@
 % Useful commands to initialize script
 clear
 close all
+addpath(genpath(pwd));
 
 %% DATA
 % Beam properties
@@ -14,8 +15,7 @@ y2 = 1.2; % [m]
 h1 = 0.040; % [mm]
 h2 = 0.030; % [mm]
 h3 = 0.004; % [mm]
-J1=1.34e-3; %[m^4]
-yc=0.5438; %[m]
+yc = 0.5438; %[m]
 
 % Materials arrays
 % Aluminium beam
@@ -48,7 +48,7 @@ load('shell.mat','xn','Tn','Tm','indRoot','indPointA','indPointB','indSpar1','in
 % indSpar2  : Array of indices for rear spar centerline nodes.
 
 % Some variables
-[Nnodes,Nel,NDOFs] = GetDiscretization(xn);
+[Nnodes,Nel,NDOFs] = GetDiscretization(xn,Tn);
 
 % Boundary conditions: Up
 [Up] = SetFixedBoundaryConditions(indRoot', [1,2,3,4,5,6]);
@@ -57,10 +57,10 @@ load('shell.mat','xn','Tn','Tm','indRoot','indPointA','indPointB','indSpar1','in
 % Point forces calculation
 F_wb = -1;
 T_wb = 1;
-FA=F_wb*(y_2-y_c)/(y_2-y_1);
-FB=F_wb*(y_c-y_1)/(y_2-y_1);
-MA=-T_wb/(y_2-y_1);
-MB=T_wb/(y_2-y_1);
+FA=F_wb*(y2-yc)/(y2-y1);
+FB=F_wb*(yc-y1)/(y2-y1);
+MA=-T_wb/(y2-y1);
+MB=T_wb/(y2-y1);
 
 % Fe: Point forces
 FAe = SetExternalForcesMomentums(FA, indPointA, 3);
@@ -73,32 +73,19 @@ Fe = [FAe;FBe;MAe;MBe];
 Be = [];
 %Be = BeamSetGravityBodyForces(xn, Tn, Tm, m, 3);
 
-% Qe: Distributed forces
-Qe = [];
+% Pe: Distributed forces
+Pe = [];
 
 
 %% SOLVER
 
 % Obtain system matrices
+[K,M,R] = ShellGlobalMatricesAssembly(xn,Tn,Tm,m);
 
-% TIP: To avoid recomputing the system matrices use a save/load structure:
-if 1 % Set to 1 to (re)compute the system matrices and '0' to load them
-    
-    % Compute system matrices (as long as parameters don't change there is 
-    % no need to repeat the matrix assembly on every run)
-    % ...
-    
-    % Once (re)computed, save them to a separate data file
-    save('shell_matrices.mat','K','M'); 
-    % TIP: Add other potential results that can be reused in other parts
-    % (e.g. element's length 'l', elements rotations matrices 'R', etc.)
-    
-else
-    
-    % Load previously computed results
-    load('shell_matrices.mat','K','M');
-    
-end
+% Save matrices K and M
+save('shell_matrices.mat','K','M'); 
+
+
 
 % Perform modal analysis
 % ...

@@ -1,7 +1,7 @@
 function [u_,theta_,F_,M_,eps_a,eps_s,eps_t,eps_b] = BeamStrainsDisplacements(xn,Tn,u_hat,Ba,Bs,Bt,Bb,Ke,R)
 
 % Some variables
-[~,Nel,~] = GetDiscretization(xn);
+[~,Nel,~] = GetDiscretization(xn,Tn);
 
 % Preallocation 
 u_(1,1) = 0;
@@ -15,7 +15,7 @@ theta_(3,1) = 0;
 for e=1:Nel
 
     % Get element degrees of freedom indexes
-    I_dof = GetIDOF(Tn,e);
+    I_dof = GetIDOF(Tn,e,'beam');
 
     % Get element displacements
     u_hat_e = u_hat(I_dof,1);

@@ -1,7 +1,7 @@
-function [U,pd_,pm_,frequencies] = BeamFrequencyAnalysis(Nm,xn,Fe,Be,Qe,Nw,Ip,If,M,K)
+function [U,pd_,pm_,frequencies] = BeamFrequencyAnalysis(Nm,xn,Tn,Fe,Be,Qe,Nw,Ip,If,M,K)
 
 % Variables
-[~,Nel,NDOFs] = GetDiscretization(xn);
+[~,Nel,NDOFs] = GetDiscretization(xn,Tn);
 
 % Sparse matrices
 K = sparse(K);

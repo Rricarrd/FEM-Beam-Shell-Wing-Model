@@ -3,6 +3,7 @@
 % Useful commands to initialize script
 clear
 close all
+addpath(genpath(pwd));
 
 %% DATA
 % Beam properties
@@ -50,32 +51,42 @@ load('shell.mat','xn','Tn','Tm','indRoot','indPointA','indPointB','indSpar1','in
 % Some variables
 [Nnodes,Nel,NDOFs] = GetDiscretization(xn);
 
+% Boundary conditions: Up
+[Up] = SetFixedBoundaryConditions(indRoot', [1,2,3,4,5,6]);
 
-% Define boundary conditions and forces data matrices: Up, Fe, Pe, Be
-% ...
+% External forces: Fe, Qe, Be
+% Point forces calculation
+F_wb = -1;
+T_wb = 1;
+FA=F_wb*(y2-yc)/(y2-y1);
+FB=F_wb*(yc-y1)/(y2-y1);
+MA=-T_wb/(y2-y1);
+MB=T_wb/(y2-y1);
+
+% Fe: Point forces
+FAe = SetExternalForcesMomentums(FA, indPointA, 3);
+FBe = SetExternalForcesMomentums(FB, indPointA, 3);
+MAe = SetExternalForcesMomentums(MA, indPointB, 3);
+MBe = SetExternalForcesMomentums(MB, indPointB, 3);
+Fe = [FAe;FBe;MAe;MBe];
+
+% Be: Body forces
+Be = [];
+%Be = BeamSetGravityBodyForces(xn, Tn, Tm, m, 3);
+
+% Pe: Distributed forces
+Pe = [];
+
 
 %% SOLVER
 
 % Obtain system matrices
+[K,M,R] = ShellGlobalMatricesAssembly(xn,Tn,Tm,m);
 
-% TIP: To avoid recomputing the system matrices use a save/load structure:
-if 1 % Set to 1 to (re)compute the system matrices and '0' to load them
-    
-    % Compute system matrices (as long as parameters don't change there is 
-    % no need to repeat the matrix assembly on every run)
-    % ...
-    
-    % Once (re)computed, save them to a separate data file
-    save('shell_matrices.mat','K','M'); 
-    % TIP: Add other potential results that can be reused in other parts
-    % (e.g. element's length 'l', elements rotations matrices 'R', etc.)
-    
-else
-    
-    % Load previously computed results
-    load('shell_matrices.mat','K','M');
-    
-end
+% Save matrices K and M
+save('beam_matrices.mat','K','M'); 
+
+
 
 % Perform modal analysis
 % ...

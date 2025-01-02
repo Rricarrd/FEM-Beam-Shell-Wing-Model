@@ -1,7 +1,7 @@
 function [f_hat] = BeamGlobalForceVector(xn,Tn,Fe,Be,Qe,R,Me,l)
 
 % Precalculations
-[Nnodes,Nel,NDOFs] = GetDiscretization(xn);
+[Nnodes,Nel,NDOFs] = GetDiscretization(xn,Tn);
 
 % 3.1 Point loads
 f_hat = zeros(NDOFs,1);

@@ -47,7 +47,7 @@ load('beam.mat','xn','Tn','Tm');
 % Tm : Material connectivities [Nelem x 1]
 
 % Some variables
-[Nnodes,Nel,NDOFs] = GetDiscretization(xn);
+[Nnodes,Nel,NDOFs] = GetDiscretization(xn,Tn);
 
 % Boundary conditions: Up
 Up = SetFixedBoundaryConditions(1, [1,2,3,4,5,6]);
@@ -83,7 +83,7 @@ save('beam_matrices.mat','K','M');
 [f_hat] = BeamGlobalForceVector(xn,Tn,Fe,Be,Qe,R,Me,l);
 
 % Boundary conditions
-[u_hat,If,Ip] = BeamBoundaryConditions(xn,Up);
+[u_hat,If,Ip] = BeamBoundaryConditions(xn,Tn,Up);
 
 % Solve system
 u_hat(If,1) = inv(K(If,If))*(f_hat(If,1)-(K(If,Ip)*u_hat(Ip,1)));
@@ -102,7 +102,7 @@ save('beam_results.mat');
 % Perform modal analysis
 Nm = 6;
 Nw = 500;
-[U,pd_,pm_,n_omega] = BeamFrequencyAnalysis(Nm,xn,Fe,Be,Qe,Nw,Ip,If,M,K);
+[U,pd_,pm_,n_omega] = BeamFrequencyAnalysis(Nm,xn,Tn,Fe,Be,Qe,Nw,Ip,If,M,K);
 
 for i = 1:Nm
     modes_legend{i} = sprintf("Mode %i, $f = %.2f Hz$",i,n_omega(i));

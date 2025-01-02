@@ -1,7 +1,8 @@
-function [Nnodes,Nel,NDOFs] = GetDiscretization(xn)
+function [Nnodes,Nel,NDOFs] = GetDiscretization(xn,Tn)
 % Some variables
 Nnodes = length(xn);
-Nel = Nnodes - 1;
+Nel = size(Tn,1);
 NDOFs = Nnodes*6;
+
 end
 
