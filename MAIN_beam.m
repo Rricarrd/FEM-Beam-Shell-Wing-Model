@@ -89,21 +89,23 @@ u_hat(If,1) = inv(K(If,If))*(f_hat(If,1)-(K(If,Ip)*u_hat(Ip,1)));
 fr = K*u_hat - f_hat;
 
 
-% Perform modal analysis
-[fd_,fm_,pd_,pm_] = BeamFrequencyAnalysis(xn,Fe,500,Ip,If,M,K);
-
-
-
-
-
 %% POSTPROCESS
 
 % Save data for postprocessing in separate script file (useful when results
 % from different runs need to be compared)
 save('beam_results.mat');
 
-% Postprocessing
+% Strains displacements
 [u_,theta_,F_,M_,eps_a,eps_s,eps_t,eps_b] = BeamStrainsDisplacements(xn,Tn,u_hat,Ba,Bs,Bt,Bb,Ke,R);
+
+% Perform modal analysis
+Nm = 6;
+Nw = 500;
+[U,pd_,pm_,n_omega] = BeamFrequencyAnalysis(Nm,xn,Fe,Be,Qe,Nw,Ip,If,M,K);
+
+for i = 1:Nm
+    modes_legend{i} = sprintf("Mode %i, $f = %.2f Hz$",i,n_omega(i));
+end
 
 % Element center coordinates
 for e = 1:Nel
@@ -126,13 +128,26 @@ grid minor;
 
 
 figure(3)
-hold on
-for k = 1:6
-plot(xe, pd_(:, k, 1));
-end
+plot(xe, pd_(:, :, 3));
+grid minor;
+title(sprintf("Modal displacements with f %i",i))
+xlabel("x [m]", 'Interpreter', 'latex');
+ylabel("Modal displacements $\Phi(u_z)$", 'Interpreter', 'latex');
+legend(modes_legend,'Interpreter',"latex");
+
+figure(4)
+plot(xe, pd_(:, :, 2));
 grid minor;
 xlabel("x [m]", 'Interpreter', 'latex');
-ylabel("$\Phi(u_y)$", 'Interpreter', 'latex');
-legend("Mode 1", "Mode 2", "Mode 3", "Mode 4", "Mode 5", "Mode 6", 'Interpreter', 'latex');
-hold off; 
+ylabel("Modal displacements $\Phi(u_y)$", 'Interpreter', 'latex');
+legend(modes_legend,'Interpreter',"latex");
 
+figure(5)
+plot(xe, pm_(:, :, 1));
+grid minor;
+xlabel("x [m]", 'Interpreter', 'latex');
+ylabel("Modal displacements $\Phi(\theta_x)$", 'Interpreter', 'latex');
+legend(modes_legend,'Interpreter',"latex");
+
+disp("Natural frequencies are:")
+disp(n_omega)
