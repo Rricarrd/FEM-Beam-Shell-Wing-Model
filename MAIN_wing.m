@@ -3,6 +3,7 @@
 % Useful commands to initialize script
 clear
 close all
+addpath(genpath(pwd));
 
 %% DATA
 
@@ -12,7 +13,7 @@ close all
 %% PREPROCESS
 
 % Load mesh data
-load('wing.mat','xn','Tn_st','Tm_st','Tn_wb','Tm_wb','Tn_rb','Tm_rb','Tn_sk','Tm_sk','indRoot','indPointA','indPointB','indSpar1','indSpar2','n_u','n_l');
+load('DATA/wing.mat','xn','Tn_st','Tm_st','Tn_wb','Tm_wb','Tn_rb','Tm_rb','Tn_sk','Tm_sk','indRoot','indPointA','indPointB','indSpar1','indSpar2','n_u','n_l');
 % xn : Nodal coordinates       
 %      |x1 y1 z1|
 %      |x2 y2 z2|

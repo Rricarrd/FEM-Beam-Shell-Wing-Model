@@ -34,7 +34,7 @@ m(3).h = h3;
 %% PREPROCESS
 
 % Load mesh data
-load('shell.mat','xn','Tn','Tm','indRoot','indPointA','indPointB','indSpar1','indSpar2');
+load('DATA/shell.mat','xn','Tn','Tm','indRoot','indPointA','indPointB','indSpar1','indSpar2');
 % xn : Nodal coordinates       
 %      |x1 y1 z1|
 %      |x2 y2 z2|
@@ -83,7 +83,7 @@ Pe = [];
 [K,M,R] = ShellGlobalMatricesAssembly(xn,Tn,Tm,m);
 
 % Save matrices K and M
-save('shell_matrices.mat','K','M'); 
+save('RESULTS/shell_matrices.mat','K','M'); 
 
 
 
@@ -100,7 +100,7 @@ save('shell_matrices.mat','K','M');
 
 % Save data for postprocessing in separate script file (useful when results
 % from different runs need to be compared)
-save('shell_results.mat');
+save('RESULTS/shell_results.mat');
 
 % Include plot functions
 % ...

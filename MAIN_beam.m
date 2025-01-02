@@ -37,7 +37,7 @@ m(1).j_hat = [0,1,0]; % Shear center [m]
 %% PREPROCESSING
 
 % Load mesh data
-load('beam.mat','xn','Tn','Tm');
+load('DATA/beam.mat','xn','Tn','Tm');
 
 % xn : Nodal coordinates       
 %      |x1 y1 z1|
@@ -74,7 +74,7 @@ Qe = [];
 [K,M,R,l,Me,Ke,Ba,Bb,Bs,Bt] = BeamGlobalMatricesAssembly(xn,Tn,Tm,m);
 
 % Save matrices K and M
-save('beam_matrices.mat','K','M'); 
+save('RESULTS/beam_matrices.mat','K','M'); 
 
 % Load previously computed results
 %load('beam_matrices.mat','K','M');
@@ -94,7 +94,7 @@ fr = K*u_hat - f_hat;
 
 % Save data for postprocessing in separate script file (useful when results
 % from different runs need to be compared)
-save('beam_results.mat');
+save('RESULTS/beam_results.mat');
 
 % Strains displacements
 [u_,theta_,F_,M_,eps_a,eps_s,eps_t,eps_b] = BeamStrainsDisplacements(xn,Tn,u_hat,Ba,Bs,Bt,Bb,Ke,R);
