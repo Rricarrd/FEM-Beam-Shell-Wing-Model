@@ -18,7 +18,6 @@ h3 = 0.004; % [mm]
 
 % Materials arrays
 % Aluminium beam
-m(1).INDEX = 1;
 m(1).E = 110e9; % Stiffness [Pa] 
 m(1).v = 0.33; % Poisson ratio
 m(1).G = m(1).E/(2*(1+m(1).v)); % Shear modulus
@@ -54,16 +53,18 @@ load('beam.mat','xn','Tn','Tm');
 Up = SetFixedBoundaryConditions(1, [1,2,3,4,5,6]);
 
 % External forces: Fe, Qe, Be
-% Point forces
-Feu = SetExternalForcesMomentums(-1, Nnodes, 3);
-T = SetExternalForcesMomentums(1, Nnodes, 4);
+% Fe: Point forces
+F_wb = -1;
+T_wb = 1;
+Feu = SetExternalForcesMomentums(F_wb, Nnodes, 3);
+T = SetExternalForcesMomentums(1, T_wb, 4);
 Fe = [Feu;T];
 
-% Body forces
+% Be: Body forces
 Be = [];
-Be = SetGravityBodyForces(xn, Tn, Tm, m, 3);
+%Be = BeamSetGravityBodyForces(xn, Tn, Tm, m, 3);
 
-% Distributed forces
+% Qe: Distributed forces
 Qe = [];
 
 

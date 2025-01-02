@@ -1,4 +1,4 @@
-function [Be] = SetGravityBodyForces(xn,Tn,Tm,m, DOFs)
+function [Be] = BeamSetGravityBodyForces(xn,Tn,Tm,m,DOFs)
 
 % xn: Nodal coordinates
 % Tn: Nodal conenctivities
