@@ -113,6 +113,9 @@ fr = K*u_hat - f_hat;
 % Get average deflection and twist
 for i=1:length(indSpar1)
     % Obtain positions of each spar node
+    x1(i,1) = xn(indSpar1(i),1);
+    x2(i,1) = xn(indSpar2(i),1);
+    % Obtain positions of each spar node
     y1(i,1) = xn(indSpar1(i),2);
     y2(i,1) = xn(indSpar2(i),2);
     % Obtain z displacement of each spar node
@@ -126,6 +129,8 @@ end
 theta_x = (u_z2-u_z1)./(y2-y1);
 u_z_bar = u_z1+theta_x.*(yc-y1);
 u_y_bar = (u_y1+u_y2)/2;
+
+plot(x1,u_z_bar)
 
 % Save data for postprocessing in separate script file (useful when results
 % from different runs need to be compared)
