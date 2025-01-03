@@ -1,4 +1,4 @@
-function [u_hat,If,Ip] = BeamBoundaryConditions(xn,Tn,Up)
+function [u_hat,If,Ip] = BoundaryConditions(xn,Tn,Up)
 
 % Precalculations
 [~,~,NDOFs] = GetDiscretization(xn,Tn);

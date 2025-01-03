@@ -32,5 +32,5 @@ for i = 1:length(imodes)
     axis equal;
     axis vis3d;
 end
-
+fontsize(20,"points")
 end

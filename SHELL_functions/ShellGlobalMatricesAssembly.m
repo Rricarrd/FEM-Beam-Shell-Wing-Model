@@ -1,4 +1,4 @@
-function [K,M,R,Me,S4,N] = ShellGlobalMatricesAssembly(xn,Tn,Tm,m)
+function [K,M,R,Me,S4,N,Bb,Bmn,Bmt,Bs] = ShellGlobalMatricesAssembly(xn,Tn,Tm,m)
 
 % Variables and preallocation
 [~,Nel,NDOFs] = GetDiscretization(xn,Tn);

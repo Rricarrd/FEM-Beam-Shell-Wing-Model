@@ -4,6 +4,8 @@ n = zeros(3,Nnodes);
 
 % For each element
 for e = 1:Nel
+    me = m(Tm(e));
+
     % Compute normal and surface
     S = 0.5*cross((xn(Tn(e,3),:)' - xn(Tn(e,1),:)'), ...
               (xn(Tn(e,4),:)' - xn(Tn(e,2),:)'));
@@ -24,7 +26,7 @@ for e = 1:Nel
         if alpha<deg2rad(0.1)
             % Evaluate artificial rotation stiffness component
             Idof = 6*(Tn(e,i)-1)+transpose([4,5,6]);
-            Kr(Idof,Idof) = Kr(Idof,Idof) + m(Tm(e)).E*m(Tm(e)).h*Se(e)*k_hat(:,e)*transpose(k_hat(:,e));
+            Kr(Idof,Idof) = Kr(Idof,Idof) + me.E*me.h*Se(e)*k_hat(:,e)*transpose(k_hat(:,e));
         end
     end
    

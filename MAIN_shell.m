@@ -80,7 +80,7 @@ Pe = [];
 %% SOLVER
 
 % Obtain system matrices
-[K,M,R,Me,S4,N] = ShellGlobalMatricesAssembly(xn,Tn,Tm,m);
+[K,M,R,Me,S4,N,Bb,Bmn,Bmt,Bs] = ShellGlobalMatricesAssembly(xn,Tn,Tm,m);
 
 % Compute artificial rotation stiffness matrix
 [K] = CompArtifRotatStiffMatr(Nnodes,Nel,NDOFs,K,Tn,xn,Tm,m);
@@ -88,29 +88,55 @@ Pe = [];
 % Save matrices K and M
 %save('RESULTS/shell_matrices.mat','K','M'); 
 
-
+% Shell Boundary conditions
+[u_hat,If,Ip] = BoundaryConditions(xn,Tn,Up);
 
 % Perform modal analysis
-% ...
+Nm = 10;
+Nw = 500;
+%[U,pd_,pm_,n_omega] = BeamFrequencyAnalysis(Nm,xn,Tn,Fe,Be,Nw,Ip,If,M,K);
+
 
 % Compute external forces vector
-[f_hat] = ShellGlobForceVec(Nnodes,Nel,NDOFs,Tn,xn,Fe,Pe,Be,Me,S4,R,N);
+[f_hat] = ShellGlobForceVec(Nnodes,Nel,NDOFs,Tn,Fe,Pe,Be,Me,S4,R,N);
 
 % Solve system
-% ...
+u_hat(If,1) = K(If,If)\(f_hat(If,1)-(K(If,Ip)*u_hat(Ip,1)));
+fr = K*u_hat - f_hat;
+
+
 
 %% POSTPROCESS
 
+[eps_b,eps_m,eps_s] = ShellsPostprocess(Nel,Tn,Tm,m,Bb,Bmn,Bmt,Bs,R,u_hat);
+
+% Get average deflection and twist
+for i=1:length(indSpar1)
+    % Obtain positions of each spar node
+    y1(i,1) = xn(indSpar1(i),2);
+    y2(i,1) = xn(indSpar2(i),2);
+    % Obtain z displacement of each spar node
+    u_z1(i,1) = u_hat(6*indSpar1(i)-3);
+    u_z2(i,1) = u_hat(6*indSpar2(i)-3);
+    % Obtain y displacement of each spar node
+    u_y1(i,1) = u_hat(6*indSpar1(i)-4);
+    u_y2(i,1) = u_hat(6*indSpar2(i)-4);
+end
+
+theta_x = (u_z2-u_z1)./(y2-y1);
+u_z_bar = u_z1+theta_x.*(yc-y1);
+u_y_bar = (u_y1+u_y2)/2;
+
 % Save data for postprocessing in separate script file (useful when results
 % from different runs need to be compared)
-save('RESULTS/shell_results.mat');
+%save('RESULTS/shell_results.mat');
 
 % Include plot functions
 % ...
 
 % Additional plot functions useful to visualize 3D model and modes
 
-plotDeformed('shell',xn,Tn,u,scale);
+plotDeformed('shell',xn,Tn,u_hat,20000);
 % This function plots the deformed structure: 
 % xn : Nodal coordinates matrix [Nnodes x 3]
 % Tn : Nodal connectivities matrix [Nelem x 4]
@@ -119,7 +145,8 @@ plotDeformed('shell',xn,Tn,u,scale);
 % scale : Scale factor to amplify the displacements (set to appropriate 
 %         number to visualize the deformed structure properly).
 
-plotModes('shell',Phi,freq,imodes)
+% imodes = [1,2,3,4,5,6,7,8,9];
+% plotModes('shell',phi,frequencies,imodes)
 % This function plots the specified modes resulting from a modal analysis
 % in sets of 9.
 % Phi : Modal displacements matrix in which each column corresponds to the

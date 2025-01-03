@@ -1,4 +1,4 @@
-function [U,pd_,pm_,frequencies] = BeamFrequencyAnalysis(Nm,xn,Tn,Fe,Be,Qe,Nw,Ip,If,M,K)
+function [U,pd_,pm_,frequencies] = BeamFrequencyAnalysis(Nm,xn,Tn,Fe,Be,Nw,Ip,If,M,K)
 
 % Variables
 [~,Nel,NDOFs] = GetDiscretization(xn,Tn);

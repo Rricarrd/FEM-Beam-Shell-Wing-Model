@@ -83,7 +83,7 @@ save('RESULTS/beam_matrices.mat','K','M');
 [f_hat] = BeamGlobalForceVector(xn,Tn,Fe,Be,Qe,R,Me,l);
 
 % Boundary conditions
-[u_hat,If,Ip] = BeamBoundaryConditions(xn,Tn,Up);
+[u_hat,If,Ip] = BoundaryConditions(xn,Tn,Up);
 
 % Solve system
 u_hat(If,1) = K(If,If)\(f_hat(If,1)-(K(If,Ip)*u_hat(Ip,1)));
@@ -100,9 +100,9 @@ save('RESULTS/beam_results.mat');
 [u_,theta_,F_,M_,eps_a,eps_s,eps_t,eps_b] = BeamStrainsDisplacements(xn,Tn,u_hat,Ba,Bs,Bt,Bb,Ke,R);
 
 % Perform modal analysis
-Nm = 6;
+Nm = 10;
 Nw = 500;
-[U,pd_,pm_,n_omega] = BeamFrequencyAnalysis(Nm,xn,Tn,Fe,Be,Qe,Nw,Ip,If,M,K);
+[U,pd_,pm_,n_omega] = BeamFrequencyAnalysis(Nm,xn,Tn,Fe,Be,Nw,Ip,If,M,K);
 
 for i = 1:Nm
     modes_legend{i} = sprintf("Mode %i, $f = %.2f Hz$",i,n_omega(i));
