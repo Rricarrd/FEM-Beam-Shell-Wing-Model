@@ -1,6 +1,6 @@
-function [f_hat] = ShellGlobForceVec(Nnodes,Nel,NDOFs,Tn,Fe,Pe,Be,Me,S4,R,N)
+function [f_hat] = ShellGlobForceVec(xn,Tn,Fe,Pe,Be,Me,S4,R,N)
 % Compute global force vector:
-
+[Nnodes,Nel,NDOFs] = GetDiscretization(xn,Tn);
 % Point loads:
 f_hat = zeros(NDOFs,1);
 for q=1:size(Fe,1)

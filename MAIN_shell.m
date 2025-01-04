@@ -6,7 +6,7 @@ close all
 addpath(genpath(pwd));
 
 %% DATA
-% Beam properties
+% Beam and shell properties
 c = 2; % [m]
 b = 12; % [m]
 y0 = 0.725; % [m]
@@ -18,7 +18,7 @@ h3 = 0.004; % [mm]
 yc = 0.5438; %[m]
 
 % Materials arrays
-% Aluminium beam
+% Aluminium shell
 m(1).E = 110e9; % Stiffness [Pa] 
 m(1).v = 0.33; % Poisson ratio
 m(1).G = m(1).E/(2*(1+m(1).v)); % Shear modulus
@@ -31,6 +31,7 @@ m(2).h = h2;
 
 m(3) = m(1);
 m(3).h = h3;
+
 %% PREPROCESS
 
 % Load mesh data
@@ -83,7 +84,7 @@ Pe = [];
 [K,M,R,Me,S4,N,Bb,Bmn,Bmt,Bs] = ShellGlobalMatricesAssembly(xn,Tn,Tm,m);
 
 % Compute artificial rotation stiffness matrix
-[K] = CompArtifRotatStiffMatr(Nnodes,Nel,NDOFs,K,Tn,xn,Tm,m);
+[K] = CompArtifRotatStiffMatr(K,Tn,xn,Tm,m);
 
 % Save matrices K and M
 %save('RESULTS/shell_matrices.mat','K','M'); 
@@ -98,7 +99,7 @@ Nw = 500;
 
 
 % Compute external forces vector
-[f_hat] = ShellGlobForceVec(Nnodes,Nel,NDOFs,Tn,Fe,Pe,Be,Me,S4,R,N);
+[f_hat] = ShellGlobForceVec(xn,Tn,Fe,Pe,Be,Me,S4,R,N);
 
 % Solve system
 u_hat(If,1) = K(If,If)\(f_hat(If,1)-(K(If,Ip)*u_hat(Ip,1)));
@@ -108,7 +109,7 @@ fr = K*u_hat - f_hat;
 
 %% POSTPROCESS
 
-[eps_b,eps_m,eps_s] = ShellsPostprocess(Nel,Tn,Tm,m,Bb,Bmn,Bmt,Bs,R,u_hat);
+[eps_b,eps_m,eps_s,sig_m,sig_s,sig_b,sig_VM] = ShellsPostprocess(Tn,Tm,m,Bb,Bmn,Bmt,Bs,R,u_hat);
 
 % Get average deflection and twist
 for i=1:length(indSpar1)

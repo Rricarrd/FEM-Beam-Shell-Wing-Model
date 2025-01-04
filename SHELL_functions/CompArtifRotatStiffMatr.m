@@ -1,5 +1,7 @@
-function [K] = CompArtifRotatStiffMatr(Nnodes,Nel,NDOFs,K,Tn,xn,Tm,m)
+function [K] = CompArtifRotatStiffMatr(K,Tn,xn,Tm,m)
 % Compute artificial rotation stiffness matrix
+% Variables and preallocation
+[Nnodes,Nel,NDOFs] = GetDiscretization(xn,Tn);
 n = zeros(3,Nnodes);
 
 % For each element

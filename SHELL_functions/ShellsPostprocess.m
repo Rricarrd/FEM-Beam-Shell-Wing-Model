@@ -1,4 +1,6 @@
-function [eps_b,eps_m,eps_s,sig_m,sig_s,sig_b,sig_VM] = ShellsPostprocess(Nel,Tn,Tm,m,Bb,Bmn,Bmt,Bs,R,u_hat)
+function [eps_b,eps_m,eps_s,sig_m,sig_s,sig_b,sig_VM] = ShellsPostprocess(Tn,Tm,m,Bb,Bmn,Bmt,Bs,R,u_hat)
+[~,Nel,~] = GetDiscretization(1,Tn);
+
 %Computes stressess and strains
 for e=1:Nel
     me = m(Tm(e));
