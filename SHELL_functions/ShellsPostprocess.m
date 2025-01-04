@@ -21,9 +21,9 @@ for e=1:Nel
         sig_s(:,e,k) = Cs*eps_s(:,e,k);
         sig_b(:,e,k) = Cp*me.h*eps_b(:,e,k)/2;
         sig_plus = transpose([sig_m(:,e,k) + sig_b(:,e,k); sig_s(:,e,k)]);
-        sig_plus_VM = sqrt(sig_plus(1)^2+sig_plus(2)^2-sig_plus(1)*sig_plus(2)+3*(sig_plus(3)+sig_plus(4)+sig_plus(5)));
+        sig_plus_VM = sqrt(sig_plus(1)^2+sig_plus(2)^2-sig_plus(1)*sig_plus(2)+3*(sig_plus(3)^2+sig_plus(4)^2+sig_plus(5)^2));
         sig_minus = transpose([sig_m(:,e,k) - sig_b(:,e,k); sig_s(:,e,k)]);
-        sig_minus_VM = sqrt(sig_minus(1)^2+sig_minus(2)^2-sig_minus(1)*sig_minus(2)+3*(sig_minus(3)+sig_minus(4)+sig_minus(5)));
+        sig_minus_VM = sqrt(sig_minus(1)^2+sig_minus(2)^2-sig_minus(1)*sig_minus(2)+3*(sig_minus(3)^2+sig_minus(4)^2+sig_minus(5)^2));
         sig_VM(e,k) = max(sig_plus_VM,sig_minus_VM);
 
     end

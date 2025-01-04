@@ -5,6 +5,7 @@ clear
 close all
 addpath(genpath(pwd));
 
+
 %% DATA
 % Beam and shell properties
 c = 2; % [m]
@@ -68,7 +69,8 @@ FAe = SetExternalForcesMomentums(FA, indPointA, 3);
 FBe = SetExternalForcesMomentums(FB, indPointA, 3);
 MAe = SetExternalForcesMomentums(MA, indPointB, 3);
 MBe = SetExternalForcesMomentums(MB, indPointB, 3);
-Fe = [FAe;FBe;MAe;MBe];
+Fe = [FAe;FBe];
+%Fe = [MAe;MBe];
 
 % Be: Body forces
 Be = [];
@@ -84,7 +86,7 @@ Pe = [];
 [K,M,R,Me,S4,N,Bb,Bmn,Bmt,Bs] = ShellGlobalMatricesAssembly(xn,Tn,Tm,m);
 
 % Compute artificial rotation stiffness matrix
-[K] = CompArtifRotatStiffMatr(K,Tn,xn,Tm,m);
+[K] = CompArtifRotatStiffMatr(K,Tn,xn,Tm,m,1,0);
 
 % Save matrices K and M
 %save('RESULTS/shell_matrices.mat','K','M'); 
@@ -131,7 +133,15 @@ theta_x = (u_z2-u_z1)./(y2-y1);
 u_z_bar = u_z1+theta_x.*(yc-y1);
 u_y_bar = (u_y1+u_y2)/2;
 
+figure
 plot(x1,u_z_bar)
+xlabel('Spanwise distance [m]')
+ylabel('Displacement [m]')
+
+figure
+plot(x1,rad2deg(theta_x));
+xlabel('Spanwise distance [m]')
+ylabel('Deflection angle [deg]')
 
 % Save data for postprocessing in separate script file (useful when results
 % from different runs need to be compared)

@@ -1,4 +1,4 @@
-function [K] = CompArtifRotatStiffMatr(K,Tn,xn,Tm,m)
+function [K] = CompArtifRotatStiffMatr(K,Tn,xn,Tm,m,Tnb,Stringers)
 % Compute artificial rotation stiffness matrix
 % Variables and preallocation
 [Nnodes,Nel,NDOFs] = GetDiscretization(xn,Tn);
@@ -23,12 +23,22 @@ Kr = sparse(NDOFs,NDOFs);
 
 for e = 1:Nel
     for i=1:4
-        %  elementnodeDetermine whether it is or not a coplanar node
+        %  Determine whether it is or not a coplanar node
         alpha= acos(dot(n(:,Tn(e,i)),k_hat(:,e))/norm(n(:,Tn(e,i))));
-        if alpha<deg2rad(0.1)
-            % Evaluate artificial rotation stiffness component
-            Idof = 6*(Tn(e,i)-1)+transpose([4,5,6]);
-            Kr(Idof,Idof) = Kr(Idof,Idof) + me.E*me.h*Se(e)*k_hat(:,e)*transpose(k_hat(:,e));
+        % Check if we have stringers (whole wing) or only shells
+        if Stringers
+            ind_beam = ismember(Tn(e,i),Tnb(:));
+            if alpha<deg2rad(5) && ind_beam == false
+                % Evaluate artificial rotation stiffness component
+                Idof = 6*(Tn(e,i)-1)+transpose([4,5,6]);
+                Kr(Idof,Idof) = Kr(Idof,Idof) + me.E*me.h*Se(e)*k_hat(:,e)*transpose(k_hat(:,e));
+            end
+        else
+            if alpha<deg2rad(0.1)
+                % Evaluate artificial rotation stiffness component
+                Idof = 6*(Tn(e,i)-1)+transpose([4,5,6]);
+                Kr(Idof,Idof) = Kr(Idof,Idof) + me.E*me.h*Se(e)*k_hat(:,e)*transpose(k_hat(:,e));
+            end
         end
     end
    
