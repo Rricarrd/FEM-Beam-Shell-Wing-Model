@@ -33,3 +33,5 @@ octave-workspace
 RESULTS/*
 
 wing_matrices.mat
+wing_results.mat
+

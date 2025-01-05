@@ -97,7 +97,7 @@ Pe = [];
 % Perform modal analysis
 Nm = 10;
 Nw = 500;
-%[U,pd_,pm_,n_omega,phi_] = FrequencyAnalysis(Nm,xn,Tn,Fe,Be,Nw,Ip,If,M,K);
+[U,pd_,pm_,frequencies, phi] = FrequencyAnalysis(Nm,xn,Tn,Fe,Be,Nw,Ip,If,M,K);
 
 
 % Compute external forces vector
@@ -174,8 +174,8 @@ plotDeformed('shell',xn,Tn,u_hat,20000);
 % scale : Scale factor to amplify the displacements (set to appropriate 
 %         number to visualize the deformed structure properly).
 
-% imodes = [1,2,3,4,5,6,7,8,9];
-% plotModes('shell',phi,frequencies,imodes)
+imodes = [1,2,3,4,5,6];
+plotModes('shell',phi,frequencies,imodes)
 % This function plots the specified modes resulting from a modal analysis
 % in sets of 9.
 % Phi : Modal displacements matrix in which each column corresponds to the
