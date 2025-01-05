@@ -25,12 +25,12 @@ for i=1:size(n_l,1)
     p_u = -alpha*p_const_u*((1-y_u/c)^4+sqrt(1-y_u/c));
     p_l = alpha*p_const_l*((1-y_l/c)^4+sqrt(1-y_l/c));
     % Compute upper pressure
-    Pe(6*i-5,:) = [p_u*n_u(i,1), nr_u, 1];
-    Pe(6*i-4,:) = [p_u*n_u(i,2), nr_u, 2];
-    Pe(6*i-3,:) = [p_u*n_u(i,3), nr_u, 3];
-    Pe(6*i-2,:) = [p_l*n_l(i,3), nr_l, 1];
-    Pe(6*i-1,:) = [p_l*n_l(i,3), nr_l, 2];
-    Pe(6*i,:) = [p_l*n_l(i,3), nr_l, 3];
+    Pe(6*i-5,:) = [-p_u*n_u(i,1), nr_u, 1];
+    Pe(6*i-4,:) = [-p_u*n_u(i,2), nr_u, 2];
+    Pe(6*i-3,:) = [-p_u*n_u(i,3), nr_u, 3];
+    Pe(6*i-2,:) = [-p_l*n_l(i,3), nr_l, 1];
+    Pe(6*i-1,:) = [-p_l*n_l(i,3), nr_l, 2];
+    Pe(6*i,:) = [-p_l*n_l(i,3), nr_l, 3];
 end
 
 end
