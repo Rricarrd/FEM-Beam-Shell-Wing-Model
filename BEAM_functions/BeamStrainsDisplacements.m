@@ -26,6 +26,8 @@ for e=1:Nel
     eps_t(1,e) = Bt(1,:,e)*R(:,:,e)*u_hat_e; % Eps_t (3)
     eps_b(:,e) = Bb(:,:,e)*R(:,:,e)*u_hat_e; % Eps_b (4)
 
+    % 
+
     % Internal forces and moments at each element node:
     f_int(:,e) = R(:,:,e)*Ke(:,:,e)*u_hat_e;
     F_(:,e,1) = (f_int(1,e)-f_int(7,e));

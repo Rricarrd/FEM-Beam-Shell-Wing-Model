@@ -1,4 +1,4 @@
-function [K,M,R,l,Me,Ke,Ba,Bb,Bs,Bt]= BeamGlobalMatricesAssembly(xn,Tn,Tm,m) 
+function [K,M,R,l,Me,Ke,Ba,Bb,Bs,Bt] = BeamGlobalMatricesAssembly(xn,Tn,Tm,m) 
 % Variables and preallocation
 [~,Nel,NDOFs] = GetDiscretization(xn,Tn);
 K=sparse(NDOFs,NDOFs);

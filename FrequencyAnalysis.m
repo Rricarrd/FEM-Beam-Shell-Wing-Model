@@ -1,4 +1,4 @@
-function [U,pd_,pm_,frequencies] = BeamFrequencyAnalysis(Nm,xn,Tn,Fe,Be,Nw,Ip,If,M,K)
+function [U,pd_,pm_,frequencies, phi] = FrequencyAnalysis(Nm,xn,Tn,Fe,Be,Nw,Ip,If,M,K)
 
 % Variables
 [~,Nel,NDOFs] = GetDiscretization(xn,Tn);
@@ -20,9 +20,9 @@ end
 
 
 % 3.1 Solve system of equations
- for k=1:size(F,2)
- U(If,k) =inv(K(If,If)-omega(k)^2*M(If,If))*(F(If,k)-(K(If,Ip)-omega(k)^2*M(If,Ip))*U(Ip,k));
- end
+ % for k=1:size(F,2)
+ % U(If,k) =inv(K(If,If)-omega(k)^2*M(If,If))*(F(If,k)-(K(If,Ip)-omega(k)^2*M(If,Ip))*U(Ip,k));
+ % end
 
 % 4. Modal Analysis
 % 4.1 Solve eigenvalue problem

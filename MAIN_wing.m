@@ -8,14 +8,11 @@ addpath(genpath(pwd));
 %% Choose sections
 
 WingBox = 1;
-Stringers = 0;
-ribs = 0;
-skin = 0;
+Stringers = 1;
+Ribs = 1;
+Skin = 1;
 
 %% DATA
-
-
-% Define the problem's data (e.g. dimensions, material properties, etc.)
 % Beam and shell properties
 c = 2; % [m]
 b = 12; % [m]
@@ -112,26 +109,29 @@ Pe = [];
 
 % TIP: To avoid recomputing the system matrices use a save/load structure:
 if 1 % Set to 1 to (re)compute the system matrices and '0' to load them
-    [K_wb,M_wb,R_wb,Me_wb,S4_wb,N_wb,Bb_wb,Bmn_wb,Bmt_wb,Bs_wb] = ShellGlobalMatricesAssembly(xn,Tn_wb,Tm_wb,m_sh);
 
+    % Wingbox
+    [K_wb,M_wb,R_wb,Me_wb,S4_wb,N_wb,Bb_wb,Bmn_wb,Bmt_wb,Bs_wb] = ShellGlobalMatricesAssembly(xn,Tn_wb,Tm_wb,m_sh);
     [K_wb] = CompArtifRotatStiffMatr(K_wb,Tn_wb,xn,Tm_wb,m_sh,Tn_st,Stringers);
     
+    % Skin
     [K_sk,M_sk,R_sk,Me_sk,S4_sk,N_sk,Bb_sk,Bmn_sk,Bmt_sk,Bs_sk] = ShellGlobalMatricesAssembly(xn,Tn_sk,Tm_sk,m_sh);
-
     [K_sk] = CompArtifRotatStiffMatr(K_sk,Tn_sk,xn,Tm_sk,m_sh,Tn_st,Stringers);
 
+    % Ribs
     [K_rb,M_rb,R_rb,Me_rb,S4_rb,N_rb,Bb_rb,Bmn_rb,Bmt_rb,Bs_rb] = ShellGlobalMatricesAssembly(xn,Tn_rb,Tm_rb,m_sh);
-
     [K_rb] = CompArtifRotatStiffMatr(K_rb,Tn_rb,xn,Tm_rb,m_sh,Tn_st,Stringers);
 
-    % Compute system matrices (as long as parameters don't change there is 
-    % no need to repeat the matrix assembly on every run)
-    % ...
-    
-    K = K_wb+K_rb+K_sk;
-    M = M_wb+M_rb+M_sk;
+    % Stringers
+    [K_st,M_st,R_st,l_st,Me_st,Ke_st,Ba_st,Bb_st,Bs_st,Bt_st] = BeamGlobalMatricesAssembly(xn,Tn_st,Tm_st,m_beam);
+
+    % Global matrices
+    K = K_st + K_wb + K_rb + K_sk;
+    M = M_st + M_wb + M_rb + M_sk;
+
     % Once (re)computed, save them to a separate data file
     save('wing_matrices.mat','K','M'); 
+
     % TIP: Add other potential results that can be reused in other parts
     % (e.g. element's length 'l', elements rotations matrices 'R', etc.)
 else
@@ -141,8 +141,7 @@ else
     
 end
 
-% Perform modal analysis
-% ...
+
 
 % Set boundary condituins
 [u_hat,If,Ip] = BoundaryConditions(xn,Tn_wb,Up);
@@ -153,6 +152,11 @@ end
 % Solve system
 u_hat(If,1) = K(If,If)\(f_hat(If,1)-(K(If,Ip)*u_hat(Ip,1)));
 fr = K*u_hat - f_hat;
+
+% Perform modal analysis
+Nm = 10;
+Nw = 500;
+[U,pd_,pm_,frequencies,phi_] = FrequencyAnalysis(Nm,xn,Tn_st,Fe,Be,Nw,Ip,If,M,K);
 
 %% POSTPROCESS
 
@@ -173,6 +177,8 @@ scale=200000;
 plotDeformed('wing',xn,Tn_wb,u_hat,scale,sig_VM_wb); % For wingbox elements
 plotDeformed('wing',xn,Tn_rb,u_hat,scale,sig_VM_rb); % For rib elements
 plotDeformed('wing',xn,Tn_sk,u_hat,scale,sig_VM_sk); % For skin elements
+%plotDeformed('wing',xn,Tn_st,u_hat,scale,sig_VM_st); % For stringer elements
+
 % This function plots the deformed structure and Von Mises stress distribution: 
 % xn : Nodal coordinates matrix [Nnodes x 3]
 % Tn : Nodal connectivities matrix [Nelem x 4]
@@ -183,6 +189,8 @@ plotDeformed('wing',xn,Tn_sk,u_hat,scale,sig_VM_sk); % For skin elements
 % sigVM : Von Mises stress at each Gauss point. It is expected to be given as 
 %         a matrix with dimensions [Nelem x Ngauss].
 
+imodes = [1,2,3,4];
+plotModes('wing',phi_,frequencies,imodes)
 %plotModes('wing',Phi,freq,imodes)
 % This function plots the specified modes resulting from a modal analysis
 % in sets of 9.
@@ -193,3 +201,5 @@ plotDeformed('wing',xn,Tn_sk,u_hat,scale,sig_VM_sk); % For skin elements
 %          can be selected. Example: imodes = [1,2,3,4,5,6,7,8,9] will plot
 %          the modes stored in the first 9 columns of Phi / imodes = [1,4,5,10] 
 %          will plot modes in columns 1, 4, 5 and 10 of Phi. 
+
+

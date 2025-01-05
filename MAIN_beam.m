@@ -102,7 +102,7 @@ save('RESULTS/beam_results.mat');
 % Perform modal analysis
 Nm = 10;
 Nw = 500;
-[U,pd_,pm_,n_omega] = BeamFrequencyAnalysis(Nm,xn,Tn,Fe,Be,Nw,Ip,If,M,K);
+[U,pd_,pm_,n_omega,phi_] = FrequencyAnalysis(Nm,xn,Tn,Fe,Be,Nw,Ip,If,M,K);
 
 for i = 1:Nm
     modes_legend{i} = sprintf("Mode %i, $f = %.2f Hz$",i,n_omega(i));
@@ -126,7 +126,6 @@ title("Twist angle ($\theta_x$) along the spanwise direction",'Interpreter',"lat
 xlabel("x [m]",'Interpreter',"latex");
 ylabel("$\theta_x$ [rad]",'Interpreter',"latex");
 grid minor;
-
 
 figure(3)
 plot(xe, pd_(:, :, 3));

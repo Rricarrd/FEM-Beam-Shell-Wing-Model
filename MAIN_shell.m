@@ -97,7 +97,7 @@ Pe = [];
 % Perform modal analysis
 Nm = 10;
 Nw = 500;
-%[U,pd_,pm_,n_omega] = BeamFrequencyAnalysis(Nm,xn,Tn,Fe,Be,Nw,Ip,If,M,K);
+%[U,pd_,pm_,n_omega,phi_] = FrequencyAnalysis(Nm,xn,Tn,Fe,Be,Nw,Ip,If,M,K);
 
 
 % Compute external forces vector
