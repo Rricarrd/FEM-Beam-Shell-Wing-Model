@@ -114,12 +114,25 @@ for e = 1:Nel
     xe(e) = (xn(Tn(e,1)) + xn(Tn(e,2)))/2;
 end
 
+%% Timoshenko analytical comparison
+P = -1;
+E=m(1).E;
+I=m(1).Iyy;
+x=xn(:,1);
+A = m(1).A;
+G = m(1).G;
+kappa = m(1).ky; %Timoshenko constant
+y_analytic = flip(P*(b-x)/(kappa*A*G)-P*x/(2*E*I).*(b^2-x.^2/3)+P*b^3/(3*E*I));
+
 figure(1)
 plot(xn(:,1),u_(3,:));
+hold on
+plot(x,y_analytic);
 title("Vertical deflection ($u_z$) along the spanwise direction",'Interpreter',"latex"); 
 xlabel("x [m]",'Interpreter',"latex");
 ylabel("$u_z$ [m]",'Interpreter',"latex");
 grid minor;
+legend('FEM','Analytical')
 
 figure(2)
 plot(xn(:,1),theta_(1,:));

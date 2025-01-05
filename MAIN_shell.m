@@ -133,10 +133,23 @@ theta_x = (u_z2-u_z1)./(y2-y1);
 u_z_bar = u_z1+theta_x.*(yc-y1);
 u_y_bar = (u_y1+u_y2)/2;
 
+%% Timoshenko analytical comparison
+P = -1;
+E=110e+9;
+I=0.234e-3;
+x=x1;
+A = 0.0247;
+G = E/(2*(1+0.33));
+kappa = 0.2621; %Timoshenko constant
+y_analytic = flip(P*(b-x)/(kappa*A*G)-P*x/(2*E*I).*(b^2-x.^2/3)+P*b^3/(3*E*I));
+
 figure
 plot(x1,u_z_bar)
+hold on
+plot(x1,y_analytic)
 xlabel('Spanwise distance [m]')
 ylabel('Displacement [m]')
+legend('FEM','Analytic')
 
 figure
 plot(x1,rad2deg(theta_x));

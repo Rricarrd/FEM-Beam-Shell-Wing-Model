@@ -25,6 +25,10 @@ h3 = 0.004; % [mm]
 yc = 0.5438; %[m]
 d_st = 0.011; %[m]
 
+% Aerodynamic factors
+p_inf = 0.75e+5; % [Pa]
+alpha = deg2rad(10); % [rad]
+
 % Aluminium beam
 m_beam(1).E = 110e9; % Stiffness [Pa] 
 m_beam(1).v = 0.33; % Poisson ratio
@@ -102,7 +106,8 @@ Be = [];
 %Be = BeamSetGravityBodyForces(xn, Tn, Tm, m, 3);
 
 % Pe: Distributed forces
-Pe = [];
+%Pe = [];
+[Pe] = PressureForces(xn,n_u,n_l,c,b,p_inf,alpha);
 
 %% SOLVER
 
@@ -206,7 +211,7 @@ Nw = 500;
 % ...
 
 % Additional plot functions useful to visualize 3D model and modes
-scale=200000;
+scale=10;
 plotDeformed('wing',xn,Tn_wb,u_hat,scale,sig_VM_wb); % For wingbox elements
 plotDeformed('wing',xn,Tn_rb,u_hat,scale,sig_VM_rb); % For rib elements
 plotDeformed('wing',xn,Tn_sk,u_hat,scale,sig_VM_sk); % For skin elements
