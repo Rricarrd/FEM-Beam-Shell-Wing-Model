@@ -66,8 +66,8 @@ MB=T_wb/(y2-y1);
 
 % Fe: Point forces
 FAe = SetExternalForcesMomentums(FA, indPointA, 3);
-FBe = SetExternalForcesMomentums(FB, indPointA, 3);
-MAe = SetExternalForcesMomentums(MA, indPointB, 3);
+FBe = SetExternalForcesMomentums(FB, indPointB, 3);
+MAe = SetExternalForcesMomentums(MA, indPointA, 3);
 MBe = SetExternalForcesMomentums(MB, indPointB, 3);
 Fe = [FAe;FBe];
 %Fe = [MAe;MBe];

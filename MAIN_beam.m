@@ -60,6 +60,7 @@ Feu = SetExternalForcesMomentums(F_wb, Nnodes, 3);
 T = SetExternalForcesMomentums(1, T_wb, 4);
 %Fe = [Feu;T];
 Fe = [Feu];
+
 % Be: Body forces
 Be = [];
 %Be = BeamSetGravityBodyForces(xn, Tn, Tm, m, 3);

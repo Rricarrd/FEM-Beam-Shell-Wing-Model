@@ -11,9 +11,9 @@ for e=1:Nel
     me = m(Tm(e));
 
     % a) Compute the rotation matrix for the current element
-    l(e)=norm(xn(Tn(e,2),:)-xn(Tn(e,1),:));
+    l(e) = norm(xn(Tn(e,2),:)-xn(Tn(e,1),:));
     i_hat = ((xn(Tn(e,2),:))'-(xn(Tn(e,1),:))')/l(e);
-    j_hat = me.j_hat; % Beam alignment assumed along the Y-axis
+    j_hat = me.j_hat;
     k_hat = cross (i_hat,j_hat);
     R_hat = [i_hat j_hat' k_hat' zeros(3,3); zeros(3,3) i_hat j_hat' k_hat']';
     R(:,:,e) = [R_hat zeros(6,6) ; zeros(6,6) R_hat];

@@ -23,21 +23,22 @@ h1 = 0.040; % [mm]
 h2 = 0.030; % [mm]
 h3 = 0.004; % [mm]
 yc = 0.5438; %[m]
+d_st = 0.011; %[m]
 
 % Aluminium beam
 m_beam(1).E = 110e9; % Stiffness [Pa] 
 m_beam(1).v = 0.33; % Poisson ratio
 m_beam(1).G = m_beam(1).E/(2*(1+m_beam(1).v)); % Shear modulus
 m_beam(1).rho = 3200; % Density [kg/m^3]
-m_beam(1).A = 0.0247; % Section area [m^2]
+m_beam(1).A =  pi*d_st^2/4; % Section area [m^2]
 m_beam(1).mu = m_beam(1).rho*m_beam(1).A; % Linear density
-m_beam(1).Iyy = 0.234e-3; % Area inertia [m^4]
-m_beam(1).Izz = 3.131e-3; % Area inertia [m^4]
-m_beam(1).J = 3.365e-3; % Polar inertia [m^4]
-m_beam(1).ky = 0.2621; % Shear correction factor
-m_beam(1).kz = 0.2417; % Shear correction factor
-m_beam(1).kt = 0.149; % Torsion correction factor
-m_beam(1).yc = 0.684; % Shear center [m]
+m_beam(1).Iyy = pi*d_st^4/64; % Area inertia [m^4]
+m_beam(1).Izz = pi*d_st^4/64; % Area inertia [m^4]
+m_beam(1).J =  pi*d_st^4/32; % Polar inertia [m^4]
+m_beam(1).ky = 5/6; % Shear correction factor
+m_beam(1).kz = 5/6; % Shear correction factor
+m_beam(1).kt = 1; % Torsion correction factor
+% m_beam(1).yc = 0.684; % Shear center [m]
 m_beam(1).j_hat = [0,1,0]; % Shear center [m]
 
 % Aluminium shell
@@ -91,8 +92,8 @@ MB=T_wb/(y2-y1);
 
 % Fe: Point forces
 FAe = SetExternalForcesMomentums(FA, indPointA, 3);
-FBe = SetExternalForcesMomentums(FB, indPointA, 3);
-MAe = SetExternalForcesMomentums(MA, indPointB, 3);
+FBe = SetExternalForcesMomentums(FB, indPointB, 3);
+MAe = SetExternalForcesMomentums(MA, indPointA, 3);
 MBe = SetExternalForcesMomentums(MB, indPointB, 3);
 Fe = [FAe;FBe;MAe;MBe];
 
@@ -106,6 +107,7 @@ Pe = [];
 %% SOLVER
 
 % Obtain system matrices
+[~,Nel,NDOFs] = GetDiscretization(xn,Tn_st);
 
 % TIP: To avoid recomputing the system matrices use a save/load structure:
 if 1 % Set to 1 to (re)compute the system matrices and '0' to load them
@@ -125,23 +127,54 @@ if 1 % Set to 1 to (re)compute the system matrices and '0' to load them
     % Stringers
     [K_st,M_st,R_st,l_st,Me_st,Ke_st,Ba_st,Bb_st,Bs_st,Bt_st] = BeamGlobalMatricesAssembly(xn,Tn_st,Tm_st,m_beam);
 
-    % Global matrices
-    K = K_st + K_wb + K_rb + K_sk;
-    M = M_st + M_wb + M_rb + M_sk;
 
     % Once (re)computed, save them to a separate data file
-    save('wing_matrices.mat','K','M'); 
+    save('wing_matrices.mat','K_st','M_st','K_rb','M_rb','K_wb','M_wb','K_sk','M_sk','Bb_wb','Bmn_wb','Bmt_wb','Bs_wb','Bb_sk','Bmn_sk','Bmt_sk','Bs_sk','Bb_rb','Bmn_rb','Bmt_rb','Bs_rb','Ba_st','Bb_st','Bs_st','Bt_st'); 
 
     % TIP: Add other potential results that can be reused in other parts
     % (e.g. element's length 'l', elements rotations matrices 'R', etc.)
 else
     
     % Load previously computed results
-    load('wing_matrices.mat','K','M');
+    load('wing_matrices.mat','K_st','M_st','K_rb','M_rb','K_wb','M_wb','K_sk','M_sk','Bb_wb','Bmn_wb','Bmt_wb','Bs_wb','Bb_sk','Bmn_sk','Bmt_sk','Bs_sk','Bb_rb','Bmn_rb','Bmt_rb','Bs_rb','Ba_st','Bb_st','Bs_st','Bt_st');
     
 end
 
+% Select sections of the wing
+K = sparse(NDOFs,NDOFs);
+M = sparse(NDOFs,NDOFs);
 
+if Stringers == 1
+    K = K + K_st; % + K_wb + K_rb + K_sk;
+    M = M + M_st; % + M_wb + M_rb + M_sk;
+else
+    K = K + K_st*1e-10; % + K_wb + K_rb + K_sk;
+    M = M + M_st*1e-10; % + M_wb + M_rb + M_sk;
+end
+
+if Ribs == 1
+    K = K + K_rb; % + K_wb + K_rb + K_sk;
+    M = M + M_rb; % + M_wb + M_rb + M_sk;
+else
+    K = K + K_rb*1e-10; % + K_wb + K_rb + K_sk;
+    M = M + M_rb*1e-10; % + M_wb + M_rb + M_sk;
+end
+
+if Skin == 1
+    K = K + K_sk; % + K_wb + K_rb + K_sk;
+    M = M + M_sk; % + M_wb + M_rb + M_sk;
+else
+    K = K + K_sk*1e-10; % + K_wb + K_rb + K_sk;
+    M = M + M_sk*1e-10; % + M_wb + M_rb + M_sk;
+end
+
+if WingBox == 1
+    K = K + K_wb; % + K_wb + K_rb + K_sk;
+    M = M + M_wb; % + M_wb + M_rb + M_sk;
+else
+    K = K + K_wb*1e-10; % + K_wb + K_rb + K_sk;
+    M = M + M_wb*1e-10; % + M_wb + M_rb + M_sk;
+end
 
 % Set boundary condituins
 [u_hat,If,Ip] = BoundaryConditions(xn,Tn_wb,Up);
@@ -189,7 +222,7 @@ plotDeformed('wing',xn,Tn_sk,u_hat,scale,sig_VM_sk); % For skin elements
 % sigVM : Von Mises stress at each Gauss point. It is expected to be given as 
 %         a matrix with dimensions [Nelem x Ngauss].
 
-imodes = [1,2,3,4];
+imodes = [1,2,3,4,5,6];
 plotModes('wing',phi_,frequencies,imodes)
 %plotModes('wing',Phi,freq,imodes)
 % This function plots the specified modes resulting from a modal analysis
