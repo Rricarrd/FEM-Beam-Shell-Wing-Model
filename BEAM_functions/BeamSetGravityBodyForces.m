@@ -2,6 +2,7 @@ function [Be] = BeamSetGravityBodyForces(xn,Tn,Tm,m,DOFs)
 
 % xn: Nodal coordinates
 % Tn: Nodal conenctivities
+% Tm: Material conectivities
 % material: 
 % DOFS: List with DOFs to apply the body force
 

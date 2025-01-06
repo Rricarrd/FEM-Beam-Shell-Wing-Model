@@ -1,4 +1,4 @@
-function [K,M,R,Me,S4,N,Bb,Bmn,Bmt,Bs] = ShellGlobalMatricesAssembly(xn,Tn,Tm,m)
+function [K,M,R,Me,S4,S1,N,Bb,Bmn,Bmt,Bs] = ShellGlobalMatricesAssembly(xn,Tn,Tm,m)
 
 % Variables and preallocation
 [~,Nel,NDOFs] = GetDiscretization(xn,Tn);
@@ -52,7 +52,7 @@ for e=1:Nel
     end
 
     N1x = J1^(-1)*[N1xi;N1eta]; % Shape function in local coordinates
-    S1 = 4*det(J1);             % 1 Gauss points surface area
+    S1(e) = 4*det(J1);             % 1 Gauss points surface area
 
     % c.1.1) Shear component of stiffness matrix
     for i=1:4
@@ -61,7 +61,7 @@ for e=1:Nel
     end
     Cs = [1 0; 0 1] * 5*me.h * (me.E/(12*(1+me.v)));
     Bs(:,:,e) = [Bsi(:,:,1) Bsi(:,:,2) Bsi(:,:,3) Bsi(:,:,4)];
-    Ks(:,:,e) = S1 * [R(:,:,e)]' * [Bs(:,:,e)]' * Cs * [Bs(:,:,e)] * [R(:,:,e)];
+    Ks(:,:,e) = S1(e) * [R(:,:,e)]' * [Bs(:,:,e)]' * Cs * [Bs(:,:,e)] * [R(:,:,e)];
 
     % c.1.2) Membrane transverse component of stiffness matrix to (prevent shear locking)
     for i = 1:4
@@ -69,7 +69,7 @@ for e=1:Nel
     end
     Cmt = me.h * (me.E/(2*(1 + me.v)));
     Bmt(:,:,e) = [Bmti(:,:,1) Bmti(:,:,2) Bmti(:,:,3) Bmti(:,:,4)];
-    Km(:,:,e) = S1*R(:,:,e)'*Bmt(:,:,e)'*Cmt*Bmt(:,:,e)*R(:,:,e);
+    Km(:,:,e) = S1(e)*R(:,:,e)'*Bmt(:,:,e)'*Cmt*Bmt(:,:,e)*R(:,:,e);
 
     % c2) 4 Gauss point quadrature matrices
     Kb(:,:,e) = zeros(24,24);

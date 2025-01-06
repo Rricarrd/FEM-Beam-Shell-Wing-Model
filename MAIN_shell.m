@@ -13,10 +13,10 @@ b = 12; % [m]
 y0 = 0.725; % [m]
 y1 = 0.4; % [m]
 y2 = 1.2; % [m]
-h1 = 0.040; % [mm]
-h2 = 0.030; % [mm]
-h3 = 0.004; % [mm]
-yc = 0.5438; %[m]
+h1 = 0.040; % [m]
+h2 = 0.030; % [m]
+h3 = 0.004; % [m]
+yc = 0.684; %[m]
 
 % Materials arrays
 % Aluminium shell
@@ -52,6 +52,17 @@ load('DATA/shell.mat','xn','Tn','Tm','indRoot','indPointA','indPointB','indSpar1
 % Some variables
 [Nnodes,Nel,NDOFs] = GetDiscretization(xn,Tn);
 
+
+
+
+%% SOLVER
+
+% Obtain system matrices
+[K,M,R,Me,S4,S1,N,Bb,Bmn,Bmt,Bs] = ShellGlobalMatricesAssembly(xn,Tn,Tm,m);
+
+% Compute artificial rotation stiffness matrix
+[K] = CompArtifRotatStiffMatr(K,Tn,xn,Tm,m,1,0);
+
 % Boundary conditions: Up
 [Up] = SetFixedBoundaryConditions(indRoot', [1,2,3,4,5,6]);
 
@@ -74,22 +85,12 @@ Fe = [FAe;FBe];
 
 % Be: Body forces
 Be = [];
-%Be = BeamSetGravityBodyForces(xn, Tn, Tm, m, 3);
+Be = GravityBodyForces(xn, Tn, 3);
+
+
 
 % Pe: Distributed forces
 Pe = [];
-
-
-%% SOLVER
-
-% Obtain system matrices
-[K,M,R,Me,S4,N,Bb,Bmn,Bmt,Bs] = ShellGlobalMatricesAssembly(xn,Tn,Tm,m);
-
-% Compute artificial rotation stiffness matrix
-[K] = CompArtifRotatStiffMatr(K,Tn,xn,Tm,m,1,0);
-
-% Save matrices K and M
-%save('RESULTS/shell_matrices.mat','K','M'); 
 
 % Shell Boundary conditions
 [u_hat,If,Ip] = BoundaryConditions(xn,Tn,Up);
@@ -165,7 +166,7 @@ ylabel('Deflection angle [deg]')
 
 % Additional plot functions useful to visualize 3D model and modes
 
-plotDeformed('shell',xn,Tn,u_hat,20000);
+% plotDeformed('shell',xn,Tn,u_hat,2000);
 % This function plots the deformed structure: 
 % xn : Nodal coordinates matrix [Nnodes x 3]
 % Tn : Nodal connectivities matrix [Nelem x 4]
@@ -174,8 +175,8 @@ plotDeformed('shell',xn,Tn,u_hat,20000);
 % scale : Scale factor to amplify the displacements (set to appropriate 
 %         number to visualize the deformed structure properly).
 
-imodes = [1,2,3,4,5,6];
-plotModes('shell',phi,frequencies,imodes)
+% imodes = [1,2,3,4,5,6];
+% plotModes('shell',phi,frequencies,imodes)
 % This function plots the specified modes resulting from a modal analysis
 % in sets of 9.
 % Phi : Modal displacements matrix in which each column corresponds to the
@@ -185,3 +186,4 @@ plotModes('shell',phi,frequencies,imodes)
 %          can be selected. Example: imodes = [1,2,3,4,5,6,7,8,9] will plot
 %          the modes stored in the first 9 columns of Phi / imodes = [1,4,5,10] 
 %          will plot modes in columns 1, 4, 5 and 10 of Phi. 
+

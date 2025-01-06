@@ -8,13 +8,7 @@ addpath(genpath(pwd));
 % Beam properties
 c = 2; % [m]
 b = 12; % [m]
-y0 = 0.725; % [m]
-y1 = 0.4; % [m]
-y2 = 1.2; % [m]
-h1 = 0.040; % [m]
-h2 = 0.030; % [m]
-h3 = 0.004; % [m]
-
+yc = 0.684; % Shear center [m]
 
 % Materials arrays
 % Aluminium beam
@@ -30,7 +24,6 @@ m(1).J = 3.365e-3; % Polar inertia [m^4]
 m(1).ky = 0.2621; % Shear correction factor
 m(1).kz = 0.2417; % Shear correction factor
 m(1).kt = 0.149; % Torsion correction factor
-m(1).yc = 0.684; % Shear center [m]
 m(1).j_hat = [0,1,0]; % Shear center [m]
 
 
@@ -49,24 +42,6 @@ load('DATA/beam.mat','xn','Tn','Tm');
 % Some variables
 [Nnodes,Nel,NDOFs] = GetDiscretization(xn,Tn);
 
-% Boundary conditions: Up
-Up = SetFixedBoundaryConditions(1, [1,2,3,4,5,6]);
-
-% External forces: Fe, Qe, Be
-% Fe: Point forces
-F_wb = -1;
-T_wb = 1;
-Feu = SetExternalForcesMomentums(F_wb, Nnodes, 3);
-T = SetExternalForcesMomentums(1, T_wb, 4);
-%Fe = [Feu;T];
-Fe = [Feu];
-
-% Be: Body forces
-Be = [];
-%Be = BeamSetGravityBodyForces(xn, Tn, Tm, m, 3);
-
-% Qe: Distributed forces
-Qe = [];
 
 
 %% SOLVER
@@ -79,6 +54,27 @@ save('RESULTS/beam_matrices.mat','K','M');
 
 % Load previously computed results
 %load('beam_matrices.mat','K','M');
+
+% Boundary conditions: Up
+Up = SetFixedBoundaryConditions(1, [1,2,3,4,5,6]);
+
+% External forces: Fe, Qe, Be
+% Fe: Point forces
+F_wb = -1;
+T_wb = 1;
+Feu = SetExternalForcesMomentums(F_wb, Nnodes, 3);
+T = SetExternalForcesMomentums(1, T_wb, 4);
+%Fe = [Feu;T];
+Fe = Feu;
+
+% Be: Body forces
+Be = [];
+Be = GravityBodyForces(xn, Tn, 3);
+
+
+% Qe: Distributed forces
+Qe = [];
+
 
 % Compute external forces vector
 [f_hat] = BeamGlobalForceVector(xn,Tn,Fe,Be,Qe,R,Me,l);
@@ -122,12 +118,12 @@ x=xn(:,1);
 A = m(1).A;
 G = m(1).G;
 kappa = m(1).ky; %Timoshenko constant
-y_analytic = flip(P*(b-x)/(kappa*A*G)-P*x/(2*E*I).*(b^2-x.^2/3)+P*b^3/(3*E*I));
+z_analytic = flip(P*(b-x)/(kappa*A*G)-P*x/(2*E*I).*(b^2-x.^2/3)+P*b^3/(3*E*I));
 
 figure(1)
 plot(xn(:,1),u_(3,:));
 hold on
-plot(x,y_analytic);
+plot(x,z_analytic);
 title("Vertical deflection ($u_z$) along the spanwise direction",'Interpreter',"latex"); 
 xlabel("x [m]",'Interpreter',"latex");
 ylabel("$u_z$ [m]",'Interpreter',"latex");

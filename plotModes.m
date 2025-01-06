@@ -31,6 +31,8 @@ for i = 1:length(imodes)
     title(sprintf('f_{%i} = %.3f Hz',I,freq(I)));
     axis equal;
     axis vis3d;
+    h = gca;    % Get the handle to the current axes
+    set(h, 'FontSize', 20); % Set font size
 end
-fontsize(20,"points")
+
 end
