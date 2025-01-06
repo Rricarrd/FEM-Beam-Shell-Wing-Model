@@ -1,17 +1,8 @@
-function [u_,theta_,F_,M_,eps_a,eps_s,eps_t,eps_b] = BeamStrainsDisplacements(xn,Tn,Tm,m,Ba,Bs,Bt,Bb,Ke,R,u_hat)
+function [eps_a,eps_s,eps_t,eps_b] = BeamPostprocess(xn,Tn,Tm,m,Ba,Bs,Bt,Bb,Ke,R,u_hat)
+% Discretization
+[~,Nel,~] = GetDiscretization(1,Tn);
 
-% Some variables
-[~,Nel,~] = GetDiscretization(xn,Tn);
-
-% Preallocation 
-u_(1,1) = 0;
-u_(2,1) = 0; 
-u_(3,1) = 0;
-theta_(1,1) = 0;
-theta_(2,1) = 0;
-theta_(3,1) = 0;
-
-% Strain and internal forces
+%Computes stressess and strains
 for e=1:Nel
 
     % Get element degrees of freedom indexes
@@ -26,8 +17,6 @@ for e=1:Nel
     eps_t(1,e) = Bt(1,:,e)*R(:,:,e)*u_hat_e; % Eps_t (3)
     eps_b(:,e) = Bb(:,:,e)*R(:,:,e)*u_hat_e; % Eps_b (4)
 
-    % 
-
     % Internal forces and moments at each element node:
     f_int(:,e) = R(:,:,e)*Ke(:,:,e)*u_hat_e;
     F_(:,e,1) = (f_int(1,e)-f_int(7,e));
@@ -37,16 +26,7 @@ for e=1:Nel
     M_(:,e,2) = (f_int(5,e)-f_int(11,e));
     M_(:,e,3) = (f_int(6,e)-f_int(12,e));
 
-    % Displacement of each node
-    n = e+1;
-    u_(1,n)=u_hat(n*6-5);
-    u_(2,n)=u_hat(n*6-4);    
-    u_(3,n)=u_hat(n*6-3);
-    theta_(1,n)=u_hat(n*6-2);
-    theta_(2,n)=u_hat(n*6-1);
-    theta_(3,n)=u_hat(n*6);
+
+    % Stresses
 
 end
-
-end
-

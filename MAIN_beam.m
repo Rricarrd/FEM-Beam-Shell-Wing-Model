@@ -74,7 +74,7 @@ Be = GravityBodyForces(xn, Tn, 3);
 
 % Qe: Distributed forces
 Qe = [];
-
+Pe = [];
 
 % Compute external forces vector
 [f_hat] = BeamGlobalForceVector(xn,Tn,Fe,Be,Qe,R,Me,l);
@@ -94,23 +94,22 @@ fr = K*u_hat - f_hat;
 save('RESULTS/beam_results.mat');
 
 % Strains displacements
-[u_,theta_,F_,M_,eps_a,eps_s,eps_t,eps_b] = BeamStrainsDisplacements(xn,Tn,u_hat,Ba,Bs,Bt,Bb,Ke,R);
+[u_,theta_,F_,M_,eps_a,eps_s,eps_t,eps_b] = BeamStrainsDisplacements(xn,Tn,Tm,m,Ba,Bs,Bt,Bb,Ke,R,u_hat);
 
 % Perform modal analysis
-Nm = 10;
-Nw = 500;
-[U,pd_,pm_,n_omega,phi_] = FrequencyAnalysis(Nm,xn,Tn,Fe,Be,Nw,Ip,If,M,K);
+Nm = 100;
+Nw = 100;
+Im = 1:10;
+[U_ast,ud_,um_,pd_,pm_,n_omega, phi] = FrequencyAnalysis(Nm,Im,xn,Tn,Fe,Be,Pe,Nw,Ip,If,M,K);
+
+% u or p = Displacement [Nnode x Nw (excitation frequencies) x DOF per node]
 
 for i = 1:Nm
     modes_legend{i} = sprintf("Mode %i, $f = %.2f Hz$",i,n_omega(i));
 end
 
-% Element center coordinates
-for e = 1:Nel
-    xe(e) = (xn(Tn(e,1)) + xn(Tn(e,2)))/2;
-end
 
-%% Timoshenko analytical comparison
+%% ANALYTICAL COMPARISON
 P = -1;
 E=m(1).E;
 I=m(1).Iyy;
@@ -120,6 +119,9 @@ G = m(1).G;
 kappa = m(1).ky; %Timoshenko constant
 z_analytic = flip(P*(b-x)/(kappa*A*G)-P*x/(2*E*I).*(b^2-x.^2/3)+P*b^3/(3*E*I));
 
+
+%% PLOTTING
+% Static displacements
 figure(1)
 plot(xn(:,1),u_(3,:));
 hold on
@@ -137,27 +139,71 @@ xlabel("x [m]",'Interpreter',"latex");
 ylabel("$\theta_x$ [rad]",'Interpreter',"latex");
 grid minor;
 
-figure(3)
-plot(xe, pd_(:, :, 3));
-grid minor;
-title(sprintf("Modal displacements with f %i",i))
-xlabel("x [m]", 'Interpreter', 'latex');
-ylabel("Modal displacements $\Phi(u_z)$", 'Interpreter', 'latex');
-legend(modes_legend,'Interpreter',"latex");
 
-figure(4)
-plot(xe, pd_(:, :, 2));
-grid minor;
-xlabel("x [m]", 'Interpreter', 'latex');
-ylabel("Modal displacements $\Phi(u_y)$", 'Interpreter', 'latex');
-legend(modes_legend,'Interpreter',"latex");
-
-figure(5)
-plot(xe, pm_(:, :, 1));
-grid minor;
-xlabel("x [m]", 'Interpreter', 'latex');
-ylabel("Modal displacements $\Phi(\theta_x)$", 'Interpreter', 'latex');
-legend(modes_legend,'Interpreter',"latex");
-
+%% Natual frequencies and modes
+% Frequencies
 disp("Natural frequencies are:")
 disp(n_omega)
+
+% Modes
+modes = 1:10; % modes < Nm
+axis = 3;
+figure(3)
+plot(xe, pd_(:, modes, axis));
+grid minor;
+title(sprintf("First %i modal displacements",i))
+xlabel("x [m]", 'Interpreter', 'latex');
+ylabel("Modal displacements $\Phi(u_z)$", 'Interpreter', 'latex');
+legend(modes_legend{modes},'Interpreter',"latex");
+
+
+
+%% Maximum displacement vs frequency
+for f = 1:Nw
+    max_displ(f,1) = max(abs(ud_(:, f, 1)));
+    max_displ(f,2) = max(abs(ud_(:, f, 2)));
+    max_displ(f,3) = max(abs(ud_(:, f, 3)));
+    max_displ(f,4) = max(abs(um_(:, f, 1)));
+    max_displ(f,5) = max(abs(um_(:, f, 2)));
+    max_displ(f,6) = max(abs(um_(:, f, 3)));
+end
+
+% % Create a new figure
+% figure;
+% 
+% % Subplot 1: Maximum displacement u_x
+% subplot(4, 1, 1); % 3 rows, 1 column, position 1
+% plot(1:Nw, max_displ(:,1));
+% grid minor;
+% xlabel("Excitation frequency [Hz]", 'Interpreter', 'latex');
+% ylabel("Max. $u_x$ [m]", 'Interpreter', 'latex');
+% title('Displacement $u_x$', 'Interpreter', 'latex');
+% 
+% % Subplot 2: Maximum displacement u_y
+% subplot(4, 1, 2); % 3 rows, 1 column, position 2
+% plot(1:Nw, max_displ(:,2));
+% grid minor;
+% xlabel("Excitation frequency [Hz]", 'Interpreter', 'latex');
+% ylabel("Max. $u_y$ [m]", 'Interpreter', 'latex');
+% title('Displacement $u_y$', 'Interpreter', 'latex');
+% 
+% % Subplot 3: Maximum displacement u_z
+% subplot(4, 1, 3); % 3 rows, 1 column, position 3
+% plot(1:Nw, max_displ(:,3));
+% grid minor;
+% xlabel("Excitation frequency [Hz]", 'Interpreter', 'latex');
+% ylabel("Max. $u_z$ [m]", 'Interpreter', 'latex');
+% title('Displacement $u_z$', 'Interpreter', 'latex');
+% 
+% % Subplot 4: Maximum displacement theta_x
+% subplot(4, 1, 4); % 3 rows, 1 column, position 3
+% plot(1:Nw, max_displ(:,4));
+% grid minor;
+% xlabel("Excitation frequency [Hz]", 'Interpreter', 'latex');
+% ylabel("Max. $\theta_x$ [m]", 'Interpreter', 'latex');
+% title('Torsion $\theta_x$', 'Interpreter', 'latex');
+
+
+% Adjust layout
+sgtitle('Maximum Displacement for Different Directions', 'Interpreter', 'latex');
+
