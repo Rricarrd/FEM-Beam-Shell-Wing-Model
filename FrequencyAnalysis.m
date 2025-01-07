@@ -2,7 +2,7 @@ function [U_ast,ud_,um_,pd_,pm_,frequencies, phi] = FrequencyAnalysis(Nm,Im,xn,T
 
 % Nw: Excitation frequencies
 % Nm: Modes of vibration to consider for the calculation of the eigenvalues
-% Im: Selected modes to project for teh calculation of the displacement
+% Im: Selected modes to project for the calculation of the displacement
 
 
 

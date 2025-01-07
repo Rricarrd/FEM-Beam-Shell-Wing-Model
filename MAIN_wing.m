@@ -211,10 +211,11 @@ fr = K*u_hat - f_hat;
 % Perform modal analysis
 Nm = 10; % 
 Nw = 50;
-[U_ast,ud_,um_,pd_,pm_,frequencies,phi_] = FrequencyAnalysis(Nm,xn,Tn_st,Fe,Be,Nw,Ip,If,M,K);
+Im=1:10;
+[U_ast,ud_,um_,pd_,pm_,frequencies, phi] = FrequencyAnalysis(Nm,Im,xn,Tn_st,Fe,Be,Pe,Nw,Ip,If,M,K);
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%% POSTPROCESS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-[eps_a,eps_s,eps_t,eps_b] = BeamPostprocess(xn,Tn,Tm,m,Ba,Bs,Bt,Bb,Ke,R,u_hat);
+[eps_a,eps_s,eps_t,eps_b] = BeamPostprocess(xn,Tn_st,Tm_st,m_beam,Ba_st,Bs_st,Bt_st,Bb_st,Ke_st,R_st,u_hat);
 [eps_b_wb,eps_m_wb,eps_s_wb,sig_m_wb,sig_s_wb,sig_b_wb,sig_VM_wb] = ShellsPostprocess(Tn_wb,Tm_wb,m_sh,Bb_wb,Bmn_wb,Bmt_wb,Bs_wb,R_wb,u_hat);
 [eps_b_sk,eps_m_sk,eps_s_sk,sig_m_sk,sig_s_sk,sig_b_sk,sig_VM_sk] = ShellsPostprocess(Tn_sk,Tm_sk,m_sh,Bb_sk,Bmn_sk,Bmt_sk,Bs_sk,R_sk,u_hat);
 [eps_b_rb,eps_m_rb,eps_s_rb,sig_m_rb,sig_s_rb,sig_b_rb,sig_VM_rb] = ShellsPostprocess(Tn_rb,Tm_rb,m_sh,Bb_rb,Bmn_rb,Bmt_rb,Bs_rb,R_rb,u_hat);
@@ -270,7 +271,7 @@ plotDeformed('wing',xn,Tn_sk,u_hat,scale,sig_VM_sk); % For skin elements
 %         a matrix with dimensions [Nelem x Ngauss].
 
 imodes = [1,2,3,4,5,6];
-plotModes('wing',phi_,frequencies,imodes)
+plotModes('wing',phi,frequencies,imodes)
 %plotModes('wing',Phi,freq,imodes)
 % This function plots the specified modes resulting from a modal analysis
 % in sets of 9.

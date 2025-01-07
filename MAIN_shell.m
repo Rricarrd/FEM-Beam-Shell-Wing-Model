@@ -98,7 +98,8 @@ Pe = [];
 % Perform modal analysis
 Nm = 10;
 Nw = 500;
-[U,pd_,pm_,frequencies, phi] = FrequencyAnalysis(Nm,xn,Tn,Fe,Be,Nw,Ip,If,M,K);
+Im = 1:10;
+[U_ast,ud_,um_,pd_,pm_,frequencies, phi] = FrequencyAnalysis(Nm,Im,xn,Tn,Fe,Be,Pe,Nw,Ip,If,M,K);
 
 
 % Compute external forces vector
@@ -144,6 +145,12 @@ G = E/(2*(1+0.33));
 kappa = 0.2621; %Timoshenko constant
 y_analytic = flip(P*(b-x)/(kappa*A*G)-P*x/(2*E*I).*(b^2-x.^2/3)+P*b^3/(3*E*I));
 
+% Torsion
+T = 1;
+J = 3.365e-3;
+kt = 0.149;
+theta_analytic = T*x/(G*J*kt);
+
 figure
 plot(x1,u_z_bar)
 hold on
@@ -175,8 +182,8 @@ ylabel('Deflection angle [deg]')
 % scale : Scale factor to amplify the displacements (set to appropriate 
 %         number to visualize the deformed structure properly).
 
-% imodes = [1,2,3,4,5,6];
-% plotModes('shell',phi,frequencies,imodes)
+imodes = [1,2,3,4,5,6];
+plotModes('shell',phi,frequencies,imodes)
 % This function plots the specified modes resulting from a modal analysis
 % in sets of 9.
 % Phi : Modal displacements matrix in which each column corresponds to the

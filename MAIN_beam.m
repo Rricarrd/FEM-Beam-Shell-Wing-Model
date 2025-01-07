@@ -4,6 +4,11 @@ clear
 close all
 addpath(genpath(pwd));
 
+% Selection of loads
+Body_forces = 0; % Gravity
+Point_load = 0; %Bending
+Point_Torque = 1; % Torsion
+
 %% DATA
 % Beam properties
 c = 2; % [m]
@@ -62,14 +67,24 @@ Up = SetFixedBoundaryConditions(1, [1,2,3,4,5,6]);
 % Fe: Point forces
 F_wb = -1;
 T_wb = 1;
-Feu = SetExternalForcesMomentums(F_wb, Nnodes, 3);
-T = SetExternalForcesMomentums(1, T_wb, 4);
-%Fe = [Feu;T];
-Fe = Feu;
+Fe = [];
+if (Point_load)
+    Feu = SetExternalForcesMomentums(F_wb, Nnodes, 3);
+    Fe = Feu;
+end
+if(Point_Torque)
+    T = SetExternalForcesMomentums(T_wb, Nnodes, 4);
+    Fe = [Fe;T];
+end
+
 
 % Be: Body forces
-Be = [];
-Be = GravityBodyForces(xn, Tn, 3);
+if (Body_forces)
+        Be = GravityBodyForces(xn, Tn, 3);
+    else
+        Be = [];
+end
+
 
 
 % Qe: Distributed forces
@@ -97,8 +112,8 @@ save('RESULTS/beam_results.mat');
 [u_,theta_,F_,M_,eps_a,eps_s,eps_t,eps_b] = BeamStrainsDisplacements(xn,Tn,Tm,m,Ba,Bs,Bt,Bb,Ke,R,u_hat);
 
 % Perform modal analysis
-Nm = 100;
-Nw = 100;
+Nm = 10;
+Nw = 20;
 Im = 1:10;
 [U_ast,ud_,um_,pd_,pm_,n_omega, phi] = FrequencyAnalysis(Nm,Im,xn,Tn,Fe,Be,Pe,Nw,Ip,If,M,K);
 
@@ -110,6 +125,7 @@ end
 
 
 %% ANALYTICAL COMPARISON
+% Bending
 P = -1;
 E=m(1).E;
 I=m(1).Iyy;
@@ -119,6 +135,11 @@ G = m(1).G;
 kappa = m(1).ky; %Timoshenko constant
 z_analytic = flip(P*(b-x)/(kappa*A*G)-P*x/(2*E*I).*(b^2-x.^2/3)+P*b^3/(3*E*I));
 
+% Torsion
+T = 1;
+J = m(1).J;
+kt = m(1).kt;
+theta_analytic = T*x/(G*J*kt);
 
 %% PLOTTING
 % Static displacements
@@ -131,13 +152,18 @@ xlabel("x [m]",'Interpreter',"latex");
 ylabel("$u_z$ [m]",'Interpreter',"latex");
 grid minor;
 legend('FEM','Analytical')
+fontsize(20,"points")
 
 figure(2)
 plot(xn(:,1),theta_(1,:));
+hold on
+plot(x,theta_analytic);
 title("Twist angle ($\theta_x$) along the spanwise direction",'Interpreter',"latex"); 
 xlabel("x [m]",'Interpreter',"latex");
 ylabel("$\theta_x$ [rad]",'Interpreter',"latex");
 grid minor;
+legend('FEM','Analytical')
+fontsize(20,"points")
 
 
 %% Natual frequencies and modes
@@ -145,28 +171,56 @@ grid minor;
 disp("Natural frequencies are:")
 disp(n_omega)
 
-% Modes
-modes = 1:10; % modes < Nm
-axis = 3;
+% Element center coordinates
+for e = 1:Nel
+    xe(e) = (xn(Tn(e,1)) + xn(Tn(e,2)))/2;
+end
+
+% Modes uy
+modes = 1:6; % modes < Nm
+axis = 2;
 figure(3)
 plot(xe, pd_(:, modes, axis));
 grid minor;
-title(sprintf("First %i modal displacements",i))
+title(sprintf("First %i modal displacements",length(modes)))
+xlabel("x [m]", 'Interpreter', 'latex');
+ylabel("Modal displacements $\Phi(u_y)$", 'Interpreter', 'latex');
+legend(modes_legend{modes},'Interpreter',"latex");
+fontsize(20,"points")
+colororder(["#FF00FF";"#AAAA00";"#000000";"#0000FF";"#FF0000";"#00FF00"])
+% Modes uz
+modes = 1:6; % modes < Nm
+axis = 3;
+figure(4)
+plot(xe, pd_(:, modes, axis));
+grid minor;
+title(sprintf("First %i modal displacements",length(modes)))
 xlabel("x [m]", 'Interpreter', 'latex');
 ylabel("Modal displacements $\Phi(u_z)$", 'Interpreter', 'latex');
 legend(modes_legend{modes},'Interpreter',"latex");
-
-
-
+fontsize(20,"points")
+colororder(["#FF00FF";"#AAAA00";"#000000";"#0000FF";"#FF0000";"#00FF00"])
+% Modes theta
+modes = 1:6; % modes < Nm
+axis = 1;
+figure(5)
+plot(xe, pm_(:, modes, axis));
+grid minor;
+title(sprintf("First %i modal displacements",length(modes)))
+xlabel("x [m]", 'Interpreter', 'latex');
+ylabel("Modal displacements $\Phi(\theta_x)$", 'Interpreter', 'latex');
+legend(modes_legend{modes},'Interpreter',"latex");
+fontsize(20,"points")
+colororder(["#FF00FF";"#AAAA00";"#000000";"#0000FF";"#FF0000";"#00FF00"])
 %% Maximum displacement vs frequency
-for f = 1:Nw
-    max_displ(f,1) = max(abs(ud_(:, f, 1)));
-    max_displ(f,2) = max(abs(ud_(:, f, 2)));
-    max_displ(f,3) = max(abs(ud_(:, f, 3)));
-    max_displ(f,4) = max(abs(um_(:, f, 1)));
-    max_displ(f,5) = max(abs(um_(:, f, 2)));
-    max_displ(f,6) = max(abs(um_(:, f, 3)));
-end
+% for f = 1:Nw
+%     max_displ(f,1) = max(abs(ud_(:, f, 1)));
+%     max_displ(f,2) = max(abs(ud_(:, f, 2)));
+%     max_displ(f,3) = max(abs(ud_(:, f, 3)));
+%     max_displ(f,4) = max(abs(um_(:, f, 1)));
+%     max_displ(f,5) = max(abs(um_(:, f, 2)));
+%     max_displ(f,6) = max(abs(um_(:, f, 3)));
+% end
 
 % % Create a new figure
 % figure;
@@ -205,5 +259,5 @@ end
 
 
 % Adjust layout
-sgtitle('Maximum Displacement for Different Directions', 'Interpreter', 'latex');
+%sgtitle('Maximum Displacement for Different Directions', 'Interpreter', 'latex');
 
