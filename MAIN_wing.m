@@ -14,6 +14,12 @@ Stringers = 1;
 Ribs = 1;
 Skin = 1;
 
+% Choose loads / problem
+PointShear = 0;
+PointTorque = 0;
+WindTunnel = 1; % Pressure distribution
+Body_forces = 1; % Gravity
+
 % Beam and shell properties
 c = 2; % [m]
 b = 12; % [m]
@@ -171,32 +177,40 @@ FAe = SetExternalForcesMomentums(FA, indPointA, 3);
 FBe = SetExternalForcesMomentums(FB, indPointB, 3);
 MAe = SetExternalForcesMomentums(MA, indPointA, 3);
 MBe = SetExternalForcesMomentums(MB, indPointB, 3);
-Fe = [FAe;FBe;MAe;MBe];
+Fe = [];
+if PointShear
+    Fe = [FAe;FBe];
+end
+if PointTorque
+    Fe = [Fe;MAe;MBe];
+end
 
 % Be: Body forces
 
 %Be = BeamSetGravityBodyForces(xn, Tn, Tm, m, 3);
 Be = [];
-if Ribs == 1
-    Be = [Be; GravityBodyForces(xn, Tn_rb, 3)];
+if Body_forces
+    if Ribs == 1
+        Be = [Be; GravityBodyForces(xn, Tn_rb, 3)];
+    end
+    if Stringers == 1
+        Be = [Be; GravityBodyForces(xn, Tn_st, 3)];
+    end
+    if Skin == 1
+        Be = [Be; GravityBodyForces(xn, Tn_sk, 3)];
+    end
+    if WingBox == 1
+        Be = [Be; GravityBodyForces(xn, Tn_wb, 3)];
+    end
 end
-if Stringers == 1
-    Be = [Be; GravityBodyForces(xn, Tn_st, 3)];
-end
-if Skin == 1
-    Be = [Be; GravityBodyForces(xn, Tn_sk, 3)];
-end
-if WingBox == 1
-    Be = [Be; GravityBodyForces(xn, Tn_wb, 3)];
-end
-
 
 
 
 % Pe: Distributed forces
-%Pe = [];
-[Pe] = PressureForces(xn,n_u,n_l,c,b,p_inf,alpha);
-
+Pe = [];
+if WindTunnel
+    [Pe] = PressureForces(xn,n_u,n_l,c,b,p_inf,alpha);
+end
 % Set boundary conditions
 [u_hat,If,Ip] = BoundaryConditions(xn,Tn_wb,Up);
 
@@ -222,20 +236,19 @@ Im=1:10;
 
 
 % Get average deflection and twist
-for i=1:length(indSpar1)
-    % Obtain positions of each spar node
-    x1(i,1) = xn(indSpar1(i),1);
-    x2(i,1) = xn(indSpar2(i),1);
-    % Obtain positions of each spar node
-    y1(i,1) = xn(indSpar1(i),2);
-    y2(i,1) = xn(indSpar2(i),2);
-    % Obtain z displacement of each spar node
-    u_z1(i,1) = u_hat(6*indSpar1(i)-3);
-    u_z2(i,1) = u_hat(6*indSpar2(i)-3);
-    % Obtain y displacement of each spar node
-    u_y1(i,1) = u_hat(6*indSpar1(i)-4);
-    u_y2(i,1) = u_hat(6*indSpar2(i)-4);
-end
+% Obtain positions of each spar node
+spar_x1(:,1) = xn(indSpar1,1);
+spar_x2(:,1) = xn(indSpar2,1);
+% Obtain positions of each spar node
+spar_y1(:,1) = xn(indSpar1,2);
+spar_y2(:,1) = xn(indSpar2,2);
+% Obtain z displacement of each spar node
+u_z1(:,1) = u_hat(6*indSpar1-3);
+u_z2(:,1) = u_hat(6*indSpar2-3);
+% Obtain y displacement of each spar node
+u_y1(:,1) = u_hat(6*indSpar1-4);
+u_y2(:,1) = u_hat(6*indSpar2-4);
+
 
 theta_x = (u_z2-u_z1)./(y2-y1);
 u_z_bar = u_z1+theta_x.*(yc-y1);
@@ -243,14 +256,14 @@ u_y_bar = (u_y1+u_y2)/2;
 
 
 figure
-plot(x1,u_z_bar)
+plot(spar_x1,u_z_bar)
 xlabel('Spanwise distance [m]')
 ylabel('Displacement [m]')
 
 figure
-plot(x1,rad2deg(theta_x));
+plot(spar_x1,theta_x);
 xlabel('Spanwise distance [m]')
-ylabel('Deflection angle [deg]')
+ylabel('Deflection angle [rad]')
 
 
 % Additional plot functions useful to visualize 3D model and modes
