@@ -15,8 +15,8 @@ Ribs = 1;
 Skin = 1;
 
 % Choose loads / problem
-PointShear = 1;
-PointTorque = 0;
+PointShear = 0;
+PointTorque = 1;
 WindTunnel = 0; % Pressure distribution
 Body_forces = 0; % Gravity
 
@@ -282,7 +282,8 @@ xlabel("x [m]",'Interpreter',"latex");
 ylabel("$u_z$ [m]",'Interpreter',"latex");
 grid minor;
 fontsize(12,"points")
-saveas(gcf, 'Figures/UzBendingWingUnit.eps','epsc')
+% saveas(gcf, 'Figures/UzBendingWingUnit.eps','epsc')
+saveas(gcf, 'Figures/thetaBendingWingUnit.eps','epsc')
 
 % Theta x
 figure
@@ -292,7 +293,8 @@ xlabel("x [m]",'Interpreter',"latex");
 ylabel("$\theta_x$ [rad]",'Interpreter',"latex");
 grid minor;
 fontsize(12,"points")
-saveas(gcf, 'Figures/UzTwistWingUnit.eps','epsc')
+% saveas(gcf, 'Figures/UzTwistWingUnit.eps','epsc')
+saveas(gcf, 'Figures/thetaTwistWingUnit.eps','epsc')
 
 imodes = [1,2,3,4,5,6];
 plotModes('wing',phi,frequencies,imodes)
