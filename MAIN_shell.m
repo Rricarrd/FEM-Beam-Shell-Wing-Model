@@ -186,7 +186,7 @@ xlabel("x [m]",'Interpreter',"latex");
 ylabel("$u_z$ [m]",'Interpreter',"latex");
 grid minor;
 legend('FEM','Analytical')
-fontsize(20,"points")
+fontsize(12,"points")
 
 figure
 plot(spar_x1,theta_x);
@@ -197,7 +197,7 @@ xlabel("x [m]",'Interpreter',"latex");
 ylabel("$\theta_x$ [rad]",'Interpreter',"latex");
 grid minor;
 legend('FEM','Analytical')
-fontsize(20,"points")
+fontsize(12,"points")
 
 % Save data for postprocessing in separate script file (useful when results
 % from different runs need to be compared)
@@ -229,6 +229,7 @@ plotModes('shell',phi,frequencies,imodes)
 %          the modes stored in the first 9 columns of Phi / imodes = [1,4,5,10] 
 %          will plot modes in columns 1, 4, 5 and 10 of Phi. 
 
+%% MODES
 % Modes uy
 modes = 1:6; % modes < Nm
 axis = 2;
@@ -239,8 +240,9 @@ title(sprintf("First %i modal displacements",length(modes)))
 xlabel("x [m]", 'Interpreter', 'latex');
 ylabel("Modal displacements $\Phi(u_y)$", 'Interpreter', 'latex');
 legend(modes_legend{modes},'Interpreter',"latex");
-fontsize(20,"points")
+fontsize(12,"points")
 colororder(["#FF00FF";"#AAAA00";"#000000";"#0000FF";"#FF0000";"#00FF00"])
+
 % Modes uz
 modes = 1:6; % modes < Nm
 axis = 3;
@@ -251,8 +253,9 @@ title(sprintf("First %i modal displacements",length(modes)))
 xlabel("x [m]", 'Interpreter', 'latex');
 ylabel("Modal displacements $\Phi(u_z)$", 'Interpreter', 'latex');
 legend(modes_legend{modes},'Interpreter',"latex");
-fontsize(20,"points")
+fontsize(12,"points")
 colororder(["#FF00FF";"#AAAA00";"#000000";"#0000FF";"#FF0000";"#00FF00"])
+
 % Modes theta
 modes = 1:6; % modes < Nm
 axis = 1;
@@ -263,5 +266,5 @@ title(sprintf("First %i modal displacements",length(modes)))
 xlabel("x [m]", 'Interpreter', 'latex');
 ylabel("Modal displacements $\Phi(\theta_x)$", 'Interpreter', 'latex');
 legend(modes_legend{modes},'Interpreter',"latex");
-fontsize(20,"points")
+fontsize(12,"points")
 colororder(["#FF00FF";"#AAAA00";"#000000";"#0000FF";"#FF0000";"#00FF00"])

@@ -10,7 +10,7 @@ switch file
 end
 
 % Precompute
-scale = 10;
+scale = 2;
 x0 = xn(:,1);
 y0 = xn(:,2);
 z0 = xn(:,3);

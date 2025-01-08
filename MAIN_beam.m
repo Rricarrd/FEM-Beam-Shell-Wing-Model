@@ -80,9 +80,9 @@ end
 
 % Be: Body forces
 if (Body_forces)
-        Be = GravityBodyForces(xn, Tn, 3);
-    else
-        Be = [];
+    Be = GravityBodyForces(xn, Tn, 3);
+else
+	Be = [];
 end
 
 
