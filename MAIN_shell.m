@@ -5,6 +5,10 @@ clear
 close all
 addpath(genpath(pwd));
 
+% Selection of loads
+Body_forces = 0; % Gravity
+Point_load = 1; %Bending
+Point_Torque = 0; % Torsion
 
 %% DATA
 % Beam and shell properties
@@ -76,16 +80,23 @@ MA=-T_wb/(y2-y1);
 MB=T_wb/(y2-y1);
 
 % Fe: Point forces
+Fe = [];
 FAe = SetExternalForcesMomentums(FA, indPointA, 3);
 FBe = SetExternalForcesMomentums(FB, indPointB, 3);
 MAe = SetExternalForcesMomentums(MA, indPointA, 3);
 MBe = SetExternalForcesMomentums(MB, indPointB, 3);
-Fe = [FAe;FBe];
-%Fe = [MAe;MBe];
+if Point_load
+    Fe = [FAe;FBe];
+end
+if Point_Torque
+    Fe = [Fe;MAe;MBe];
+end
 
 % Be: Body forces
 Be = [];
-Be = GravityBodyForces(xn, Tn, 3);
+if Body_forces
+    Be = GravityBodyForces(xn, Tn, 3);
+end
 
 
 
@@ -101,6 +112,10 @@ Nw = 500;
 Im = 1:10;
 [U_ast,ud_,um_,pd_,pm_,frequencies, phi] = FrequencyAnalysis(Nm,Im,xn,Tn,Fe,Be,Pe,Nw,Ip,If,M,K);
 
+% Convenient for plotting
+for i = 1:Nm
+    modes_legend{i} = sprintf("Mode %i, $f = %.2f Hz$",i,frequencies(i));
+end
 
 % Compute external forces vector
 [f_hat] = ShellGlobForceVec(xn,Tn,Fe,Pe,Be,Me,S4,R,N);
@@ -116,30 +131,41 @@ fr = K*u_hat - f_hat;
 [eps_b,eps_m,eps_s,sig_m,sig_s,sig_b,sig_VM] = ShellsPostprocess(Tn,Tm,m,Bb,Bmn,Bmt,Bs,R,u_hat);
 
 % Get average deflection and twist
-for i=1:length(indSpar1)
-    % Obtain positions of each spar node
-    x1(i,1) = xn(indSpar1(i),1);
-    x2(i,1) = xn(indSpar2(i),1);
-    % Obtain positions of each spar node
-    y1(i,1) = xn(indSpar1(i),2);
-    y2(i,1) = xn(indSpar2(i),2);
-    % Obtain z displacement of each spar node
-    u_z1(i,1) = u_hat(6*indSpar1(i)-3);
-    u_z2(i,1) = u_hat(6*indSpar2(i)-3);
-    % Obtain y displacement of each spar node
-    u_y1(i,1) = u_hat(6*indSpar1(i)-4);
-    u_y2(i,1) = u_hat(6*indSpar2(i)-4);
+% Obtain positions of each spar node
+spar_x1(:,1) = xn(indSpar1,1);
+spar_x2(:,1) = xn(indSpar2,1);
+% Obtain positions of each spar node
+spar_y1(:,1) = xn(indSpar1,2);
+spar_y2(:,1) = xn(indSpar2,2);
+% Obtain z displacement of each spar node
+u_z1(:,1) = u_hat(6*indSpar1-3);
+u_z2(:,1) = u_hat(6*indSpar2-3);
+% Obtain y displacement of each spar node
+u_y1(:,1) = u_hat(6*indSpar1-4);
+u_y2(:,1) = u_hat(6*indSpar2-4);
+
+for j=1:6
+    modal_uy_1(:,j)=phi(6*indSpar1-4,j);
+    modal_uz_1(:,j)=phi(6*indSpar1-3,j);
+    modal_theta_1(:,j)=phi(6*indSpar1-2,j);
+    modal_uy_2(:,j)=phi(6*indSpar2-4,j);
+    modal_uz_2(:,j)=phi(6*indSpar2-3,j);
+    modal_theta_2(:,j)=phi(6*indSpar2-2,j);
 end
 
-theta_x = (u_z2-u_z1)./(y2-y1);
-u_z_bar = u_z1+theta_x.*(yc-y1);
+theta_x_modal = (modal_uz_2-modal_uz_1)./(y2-y1);
+u_z_modal = modal_uz_1 + theta_x_modal.*(yc-y1);
+u_y_modal = (modal_uy_1+modal_uy_2)/2;
+
+theta_x = (u_z2-u_z1)./(spar_y2-spar_y1);
+u_z_bar = u_z1+theta_x.*(yc-spar_y1);
 u_y_bar = (u_y1+u_y2)/2;
 
 %% Timoshenko analytical comparison
 P = -1;
 E=110e+9;
 I=0.234e-3;
-x=x1;
+x=spar_x1;
 A = 0.0247;
 G = E/(2*(1+0.33));
 kappa = 0.2621; %Timoshenko constant
@@ -152,17 +178,26 @@ kt = 0.149;
 theta_analytic = T*x/(G*J*kt);
 
 figure
-plot(x1,u_z_bar)
+plot(spar_x1,u_z_bar)
 hold on
-plot(x1,y_analytic)
-xlabel('Spanwise distance [m]')
-ylabel('Displacement [m]')
-legend('FEM','Analytic')
+plot(spar_x1,y_analytic)
+title("Vertical deflection ($u_z$) along the spanwise direction",'Interpreter',"latex"); 
+xlabel("x [m]",'Interpreter',"latex");
+ylabel("$u_z$ [m]",'Interpreter',"latex");
+grid minor;
+legend('FEM','Analytical')
+fontsize(20,"points")
 
 figure
-plot(x1,rad2deg(theta_x));
-xlabel('Spanwise distance [m]')
-ylabel('Deflection angle [deg]')
+plot(spar_x1,theta_x);
+hold on
+plot(spar_x1,theta_analytic)
+title("Twist angle ($\theta_x$) along the spanwise direction",'Interpreter',"latex"); 
+xlabel("x [m]",'Interpreter',"latex");
+ylabel("$\theta_x$ [rad]",'Interpreter',"latex");
+grid minor;
+legend('FEM','Analytical')
+fontsize(20,"points")
 
 % Save data for postprocessing in separate script file (useful when results
 % from different runs need to be compared)
@@ -194,3 +229,39 @@ plotModes('shell',phi,frequencies,imodes)
 %          the modes stored in the first 9 columns of Phi / imodes = [1,4,5,10] 
 %          will plot modes in columns 1, 4, 5 and 10 of Phi. 
 
+% Modes uy
+modes = 1:6; % modes < Nm
+axis = 2;
+figure(4)
+plot(spar_x1, u_y_modal);
+grid minor;
+title(sprintf("First %i modal displacements",length(modes)))
+xlabel("x [m]", 'Interpreter', 'latex');
+ylabel("Modal displacements $\Phi(u_y)$", 'Interpreter', 'latex');
+legend(modes_legend{modes},'Interpreter',"latex");
+fontsize(20,"points")
+colororder(["#FF00FF";"#AAAA00";"#000000";"#0000FF";"#FF0000";"#00FF00"])
+% Modes uz
+modes = 1:6; % modes < Nm
+axis = 3;
+figure(5)
+plot(spar_x1, u_z_modal);
+grid minor;
+title(sprintf("First %i modal displacements",length(modes)))
+xlabel("x [m]", 'Interpreter', 'latex');
+ylabel("Modal displacements $\Phi(u_z)$", 'Interpreter', 'latex');
+legend(modes_legend{modes},'Interpreter',"latex");
+fontsize(20,"points")
+colororder(["#FF00FF";"#AAAA00";"#000000";"#0000FF";"#FF0000";"#00FF00"])
+% Modes theta
+modes = 1:6; % modes < Nm
+axis = 1;
+figure(6)
+plot(spar_x1, theta_x_modal);
+grid minor;
+title(sprintf("First %i modal displacements",length(modes)))
+xlabel("x [m]", 'Interpreter', 'latex');
+ylabel("Modal displacements $\Phi(\theta_x)$", 'Interpreter', 'latex');
+legend(modes_legend{modes},'Interpreter',"latex");
+fontsize(20,"points")
+colororder(["#FF00FF";"#AAAA00";"#000000";"#0000FF";"#FF0000";"#00FF00"])
