@@ -260,24 +260,24 @@ u_y_bar = (u_y1+u_y2)/2;
 % Uz
 figure
 plot(spar_x1,u_z_bar)
-title("Loaded wing vertical deflection ($u_z$) along the spanwise direction",'Interpreter',"latex"); 
+title("Vertical deflection ($u_z$) along the spanwise direction",'Interpreter',"latex"); 
 xlabel("x [m]",'Interpreter',"latex");
 ylabel("$u_z$ [m]",'Interpreter',"latex");
 grid minor;
-fontsize(12,"points")
-
+fontsize(20,"points")
+saveas(gcf, 'Figures/UzWind.eps','epsc')
 % Theta x
 figure
 plot(spar_x1,theta_x);
-title("Loaded wing twist angle ($\theta_x$) along the spanwise direction",'Interpreter',"latex"); 
+title("Twist angle ($\theta_x$) along the spanwise direction",'Interpreter',"latex"); 
 xlabel("x [m]",'Interpreter',"latex");
 ylabel("$\theta_x$ [rad]",'Interpreter',"latex");
 grid minor;
-fontsize(12,"points")
+fontsize(20,"points")
+saveas(gcf, 'Figures/ThetaWind.eps','epsc')
 
-
-imodes = [1,2,3,4,5,6];
-plotModes('wing',phi,frequencies,imodes)
+% imodes = [1,2,3,4,5,6];
+% plotModes('wing',phi,frequencies,imodes)
 %plotModes('wing',Phi,freq,imodes)
 % This function plots the specified modes resulting from a modal analysis
 % in sets of 9.

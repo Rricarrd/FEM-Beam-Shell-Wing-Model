@@ -10,13 +10,13 @@ addpath(genpath(pwd));
 %% %%%%%%%%%%%%%%%%%%%%%%%%%% DATA  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Choose sections
 WingBox = 1;
-Stringers = 1;
-Ribs = 1;
+Stringers = 0;
+Ribs = 0;
 Skin = 1;
 
 % Choose loads / problem
-PointShear = 0;
-PointTorque = 1;
+PointShear = 1;
+PointTorque = 0;
 WindTunnel = 0; % Pressure distribution
 Body_forces = 0; % Gravity
 
@@ -267,13 +267,10 @@ theta_x_modal = (modal_uz_2-modal_uz_1)./(y2-y1);
 u_z_modal = modal_uz_1 + theta_x_modal.*(yc-y1);
 u_y_modal = (modal_uy_1+modal_uy_2)/2;
 
-theta_x = (u_z2-u_z1)./(spar_y2-spar_y1);
-u_z_bar = u_z1+theta_x.*(yc-spar_y1);
-u_y_bar = (u_y1+u_y2)/2;
-
-
+%save('Wing_DeformationsTorque.mat',"spar_x1","theta_x","u_z_bar","u_y_bar")
 
 %% %%%%%% STATIC %%%%%%
+close all
 % Uz
 figure
 plot(spar_x1,u_z_bar)
@@ -281,9 +278,9 @@ title("Loaded wing deflection ($u_z$) along the span",'Interpreter',"latex");
 xlabel("x [m]",'Interpreter',"latex");
 ylabel("$u_z$ [m]",'Interpreter',"latex");
 grid minor;
-fontsize(12,"points")
+fontsize(20,"points")
 % saveas(gcf, 'Figures/UzBendingWingUnit.eps','epsc')
-saveas(gcf, 'Figures/thetaBendingWingUnit.eps','epsc')
+saveas(gcf, 'Figures/UzTorsionWingUnitSkinWB.eps','epsc')
 
 % Theta x
 figure
@@ -292,9 +289,9 @@ title("Loaded wing twist angle ($\theta_x$) along the span",'Interpreter',"latex
 xlabel("x [m]",'Interpreter',"latex");
 ylabel("$\theta_x$ [rad]",'Interpreter',"latex");
 grid minor;
-fontsize(12,"points")
+fontsize(20,"points")
 % saveas(gcf, 'Figures/UzTwistWingUnit.eps','epsc')
-saveas(gcf, 'Figures/thetaTwistWingUnit.eps','epsc')
+saveas(gcf, 'Figures/thetaTorsionWingUnitSkinWB.eps','epsc')
 
 imodes = [1,2,3,4,5,6];
 plotModes('wing',phi,frequencies,imodes)
@@ -322,7 +319,7 @@ title(sprintf("First %i modal displacements",length(modes)))
 xlabel("x [m]", 'Interpreter', 'latex');
 ylabel("Modal displacements $\Phi(u_y)$", 'Interpreter', 'latex');
 legend(modes_legend{modes},'Interpreter',"latex");
-fontsize(10,"points")
+fontsize(16,"points")
 colororder(["#FF00FF";"#AAAA00";"#000000";"#0000FF";"#FF0000";"#00FF00"])
 saveas(gcf, 'Figures/ModesWingUnitUy.eps','epsc')
 
@@ -336,7 +333,7 @@ title(sprintf("First %i modal displacements",length(modes)))
 xlabel("x [m]", 'Interpreter', 'latex');
 ylabel("Modal displacements $\Phi(u_z)$", 'Interpreter', 'latex');
 legend(modes_legend{modes},'Interpreter',"latex");
-fontsize(10,"points")
+fontsize(16,"points")
 colororder(["#FF00FF";"#AAAA00";"#000000";"#0000FF";"#FF0000";"#00FF00"])
 saveas(gcf, 'Figures/ModesWingUnitUz.eps','epsc')
 
@@ -350,7 +347,7 @@ title(sprintf("First %i modal displacements",length(modes)))
 xlabel("x [m]", 'Interpreter', 'latex');
 ylabel("Modal displacements $\Phi(\theta_x)$", 'Interpreter', 'latex');
 legend(modes_legend{modes},'Interpreter',"latex");
-fontsize(10,"points")
+fontsize(16,"points")
 colororder(["#FF00FF";"#AAAA00";"#000000";"#0000FF";"#FF0000";"#00FF00"])
 saveas(gcf, 'Figures/ModesWingUnitTheta.eps','epsc')
 

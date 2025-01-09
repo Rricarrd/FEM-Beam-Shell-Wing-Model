@@ -21,7 +21,7 @@ for i = 1:length(imodes)
     x = x0+scale*Phi(1:6:end,I)/Phi(find(abs(Phi(:,I))==max(abs(Phi(:,I))),1),I);
     y = y0+scale*Phi(2:6:end,I)/Phi(find(abs(Phi(:,I))==max(abs(Phi(:,I))),1),I);
     z = z0+scale*Phi(3:6:end,I)/Phi(find(abs(Phi(:,I))==max(abs(Phi(:,I))),1),I);
-    subplot(3,3,i)
+    subplot(2,3,i)
     hold on
     patch(x0(Tc)',y0(Tc)',z0(Tc)',ones(size(Tc))','facecolor','none','edgecolor',0.5*[1,1,1]);
     patch(x(Tc)',y(Tc)',z(Tc)',ones(size(Tc))','facecolor','none','edgecolor','k');
