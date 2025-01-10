@@ -113,9 +113,9 @@ save('RESULTS/beam_results.mat');
 
 % Perform modal analysis
 Nm = 10;
-Nw = 20;
+omega = 1:20;
 Im = 1:10;
-[U_ast,ud_,um_,pd_,pm_,n_omega, phi] = FrequencyAnalysis(Nm,Im,xn,Tn,Fe,Be,Pe,Nw,Ip,If,M,K);
+[U_Freq,U_ast,n_omega, phi] = FrequencyAnalysis(Nm,Im,xn,Tn,Fe,Be,Pe,omega,Ip,If,M,K,f_hat);
 
 % u or p = Displacement [Nnode x Nw (excitation frequencies) x DOF per node]
 
@@ -171,16 +171,12 @@ fontsize(20,"points")
 disp("Natural frequencies are:")
 disp(n_omega)
 
-% Element center coordinates
-for e = 1:Nel
-    xe(e) = (xn(Tn(e,1)) + xn(Tn(e,2)))/2;
-end
 
 % Modes uy
 modes = 1:6; % modes < Nm
 axis = 2;
 figure(3)
-plot(xe, pd_(:, modes, axis));
+plot(xn(:,1), phi(axis:6:end, modes));
 grid minor;
 title(sprintf("First %i modal displacements",length(modes)))
 xlabel("x [m]", 'Interpreter', 'latex');
@@ -192,7 +188,7 @@ colororder(["#FF00FF";"#AAAA00";"#000000";"#0000FF";"#FF0000";"#00FF00"])
 modes = 1:6; % modes < Nm
 axis = 3;
 figure(4)
-plot(xe, pd_(:, modes, axis));
+plot(xn(:,1), phi(axis:6:end, modes));
 grid minor;
 title(sprintf("First %i modal displacements",length(modes)))
 xlabel("x [m]", 'Interpreter', 'latex');
@@ -202,9 +198,9 @@ fontsize(20,"points")
 colororder(["#FF00FF";"#AAAA00";"#000000";"#0000FF";"#FF0000";"#00FF00"])
 % Modes theta
 modes = 1:6; % modes < Nm
-axis = 1;
+axis = 4;
 figure(5)
-plot(xe, pm_(:, modes, axis));
+plot(xn(:,1), phi(axis:6:end, modes));
 grid minor;
 title(sprintf("First %i modal displacements",length(modes)))
 xlabel("x [m]", 'Interpreter', 'latex');

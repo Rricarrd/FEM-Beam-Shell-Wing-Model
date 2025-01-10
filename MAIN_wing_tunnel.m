@@ -224,9 +224,9 @@ fr = K*u_hat - f_hat;
 
 % Perform modal analysis
 Nm = 10; % 
-Nw = 50;
-Im=1:10;
-[U_ast,ud_,um_,pd_,pm_,frequencies, phi] = FrequencyAnalysis(Nm,Im,xn,Tn_st,Fe,Be,Pe,Nw,Ip,If,M,K);
+omega = 0;
+Im=1:6;
+[U_Freq,U_ast,frequencies, phi] = FrequencyAnalysis(Nm,Im,xn,Tn_st,Fe,Be,Pe,omega,Ip,If,M,K,f_hat);
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%% POSTPROCESS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 [eps_a,eps_s,eps_t,eps_b] = BeamPostprocess(xn,Tn_st,Tm_st,m_beam,Ba_st,Bs_st,Bt_st,Bb_st,Ke_st,R_st,u_hat);

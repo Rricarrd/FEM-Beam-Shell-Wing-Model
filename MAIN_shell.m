@@ -108,9 +108,9 @@ Pe = [];
 
 % Perform modal analysis
 Nm = 10;
-Nw = 500;
+omega = 1:50;
 Im = 1:10;
-[U_ast,ud_,um_,pd_,pm_,frequencies, phi] = FrequencyAnalysis(Nm,Im,xn,Tn,Fe,Be,Pe,Nw,Ip,If,M,K);
+[U_Freq,U_ast,frequencies, phi] = FrequencyAnalysis(Nm,Im,xn,Tn,Fe,Be,Pe,omega,Ip,If,M,K,f_hat);
 
 % Convenient for plotting
 for i = 1:Nm

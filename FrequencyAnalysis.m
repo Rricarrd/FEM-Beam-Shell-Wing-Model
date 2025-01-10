@@ -1,4 +1,4 @@
-function [U_ast,ud_,um_,pd_,pm_,frequencies, phi] = FrequencyAnalysis(Nm,Im,xn,Tn,Fe,Be,Pe,Nw,Ip,If,M,K)
+function [U,U_ast,frequencies, phi] = FrequencyAnalysis(Nm,Im,xn,Tn,Fe,Be,Pe,omega,Ip,If,M,K,f_hat)
 
 % Nw: Excitation frequencies
 % Nm: Modes of vibration to consider for the calculation of the eigenvalues
@@ -16,11 +16,11 @@ function [U_ast,ud_,um_,pd_,pm_,frequencies, phi] = FrequencyAnalysis(Nm,Im,xn,T
 [~,Nel,NDOFs] = GetDiscretization(xn,Tn);
 
 % 2.1 Initialization
-omega = 1:Nw;
+Nw = length(omega);
 F = zeros(NDOFs,Nw);
 U = zeros (NDOFs,Nw);
 
-for k = omega
+for k = length(omega)
     for q=1:size(Fe,1)
         F((6*(Fe(q,2)-1)+Fe(q,3)),k) = F((6*(Fe(q,2)-1)+Fe(q,3)),k)+Fe(q,1);
     end
@@ -34,11 +34,14 @@ for k = omega
     end
 end
 
+if omega==0
+    F=f_hat;
+end
 
 % 3.1 Solve system of equations
- % for k=1:size(F,2)
- % U(If,k) =inv(K(If,If)-omega(k)^2*M(If,If))*(F(If,k)-(K(If,Ip)-omega(k)^2*M(If,Ip))*U(Ip,k));
- % end
+ for k=1:size(F,2)
+    U(If,k) =(K(If,If)-omega(k)^2*M(If,If))\(F(If,k)-(K(If,Ip)-omega(k)^2*M(If,Ip))*U(Ip,k));
+ end
 
 % 4. Modal Analysis
 % 4.1 Solve eigenvalue problem
@@ -73,33 +76,30 @@ for k=1:size(F,2) % columns of F
     end
 end
 
-% 5.3 Saving results into arrays
-% Displacements under each excitation frequency
-for i=1:Nel
-    % Reduced order displacements
-    ud_(i,:,1)=U_ast(6*i-5,:);
-    ud_(i,:,2)=U_ast(6*i-4,:);    
-    ud_(i,:,3)=U_ast(6*i-3,:);
-    
-    % Reduced order torsions
-    um_(i,:,1)=U_ast(6*i-2,:);
-    um_(i,:,2)=U_ast(6*i-1,:);
-    um_(i,:,3)=U_ast(6*i,:);
-end
+% % 5.3 Saving results into arrays CAL??¿?¿?¿?¿?¿
+% % Displacements under each excitation frequency
+%     % Reduced order displacements
+% ud_(:,:,1)=U_ast(1:6:end,:);
+% ud_(:,:,2)=U_ast(2:6:end,:);    
+% ud_(:,:,3)=U_ast(3:6:end,:);
+% 
+% % Reduced order torsions
+% um_(:,:,1)=U_ast(4:6:end,:);
+% um_(:,:,2)=U_ast(5:6:end,:);
+% um_(:,:,3)=U_ast(6:6:end,:);
+% 
+% 
+% % Modal excitation displacements
+% % Modal displacements 
+% pd_(:,:,1)=phi(1:6:end,:);
+% pd_(:,:,2)=phi(2:6:end,:);    
+% pd_(:,:,3)=phi(3:6:end,:);
+% 
+% %Modal moments and twists
+% pm_(:,:,1)=phi(4:6:end,:);
+% pm_(:,:,2)=phi(5:6:end,:);
+% pm_(:,:,3)=phi(6:6:end,:);
 
-
-% Modal excitation displacements
-for i=1:Nel
-    % Modal displacements 
-    pd_(i,:,1)=phi(6*i-5,:);
-    pd_(i,:,2)=phi(6*i-4,:);    
-    pd_(i,:,3)=phi(6*i-3,:);
-    
-    %Modal moments and twists
-    pm_(i,:,1)=phi(6*i-2,:);
-    pm_(i,:,2)=phi(6*i-1,:);
-    pm_(i,:,3)=phi(6*i,:);
-end
 
 
 

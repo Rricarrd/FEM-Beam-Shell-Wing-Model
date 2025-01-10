@@ -10,8 +10,8 @@ addpath(genpath(pwd));
 %% %%%%%%%%%%%%%%%%%%%%%%%%%% DATA  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Choose sections
 WingBox = 1;
-Stringers = 0;
-Ribs = 0;
+Stringers = 1;
+Ribs = 1;
 Skin = 1;
 
 % Choose loads / problem
@@ -222,9 +222,9 @@ fr = K*u_hat - f_hat;
 
 % Perform modal analysis
 Nm = 10; % 
-Nw = 50;
+omega = 1:50;
 Im=1:10;
-[U_ast,ud_,um_,pd_,pm_,frequencies, phi] = FrequencyAnalysis(Nm,Im,xn,Tn_st,Fe,Be,Pe,Nw,Ip,If,M,K);
+[U_Freq,U_ast,frequencies, phi] = FrequencyAnalysis(Nm,Im,xn,Tn_st,Fe,Be,Pe,omega,Ip,If,M,K,f_hat);
 
 % Convenient for plotting
 for i = 1:Nm
