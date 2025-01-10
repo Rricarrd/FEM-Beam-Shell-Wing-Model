@@ -229,7 +229,7 @@ Im=1:6;
 [U_Freq,U_ast,frequencies, phi] = FrequencyAnalysis(Nm,Im,xn,Tn_st,Fe,Be,Pe,omega,Ip,If,M,K,f_hat);
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%% POSTPROCESS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-[eps_a,eps_s,eps_t,eps_b] = BeamPostprocess(xn,Tn_st,Tm_st,m_beam,Ba_st,Bs_st,Bt_st,Bb_st,Ke_st,R_st,u_hat);
+[eps_a,eps_s,eps_t,eps_b,sig_VM_st] = BeamPostprocess(xn,Tn_st,Tm_st,m_beam,Ba_st,Bs_st,Bt_st,Bb_st,Ke_st,R_st,u_hat,d_st);
 [eps_b_wb,eps_m_wb,eps_s_wb,sig_m_wb,sig_s_wb,sig_b_wb,sig_VM_wb] = ShellsPostprocess(Tn_wb,Tm_wb,m_sh,Bb_wb,Bmn_wb,Bmt_wb,Bs_wb,R_wb,u_hat);
 [eps_b_sk,eps_m_sk,eps_s_sk,sig_m_sk,sig_s_sk,sig_b_sk,sig_VM_sk] = ShellsPostprocess(Tn_sk,Tm_sk,m_sh,Bb_sk,Bmn_sk,Bmt_sk,Bs_sk,R_sk,u_hat);
 [eps_b_rb,eps_m_rb,eps_s_rb,sig_m_rb,sig_s_rb,sig_b_rb,sig_VM_rb] = ShellsPostprocess(Tn_rb,Tm_rb,m_sh,Bb_rb,Bmn_rb,Bmt_rb,Bs_rb,R_rb,u_hat);
@@ -263,17 +263,18 @@ plot(spar_x1,u_z_bar)
 title("Vertical deflection ($u_z$) along the spanwise direction",'Interpreter',"latex"); 
 xlabel("x [m]",'Interpreter',"latex");
 ylabel("$u_z$ [m]",'Interpreter',"latex");
+xlim([0,12])
 grid minor;
-fontsize(20,"points")
 saveas(gcf, 'Figures/UzWind.eps','epsc')
+
 % Theta x
 figure
 plot(spar_x1,theta_x);
 title("Twist angle ($\theta_x$) along the spanwise direction",'Interpreter',"latex"); 
 xlabel("x [m]",'Interpreter',"latex");
 ylabel("$\theta_x$ [rad]",'Interpreter',"latex");
+xlim([0,12])
 grid minor;
-fontsize(20,"points")
 saveas(gcf, 'Figures/ThetaWind.eps','epsc')
 
 % imodes = [1,2,3,4,5,6];
@@ -289,13 +290,23 @@ saveas(gcf, 'Figures/ThetaWind.eps','epsc')
 %          the modes stored in the first 9 columns of Phi / imodes = [1,4,5,10] 
 %          will plot modes in columns 1, 4, 5 and 10 of Phi. 
 
-
+%% PLOTS 2
 % Additional plot functions useful to visualize 3D model and modes
-scale=10;
-plotDeformed('wing',xn,Tn_wb,u_hat,scale,sig_VM_wb); % For wingbox elements
-plotDeformed('wing',xn,Tn_rb,u_hat,scale,sig_VM_rb); % For rib elements
-plotDeformed('wing',xn,Tn_sk,u_hat,scale,sig_VM_sk); % For skin elements
-%plotDeformed('wing',xn,Tn_st,u_hat,scale,sig_VM_st); % For stringer elements
+close all
+scale=20;
+f1 = plotDeformed('wing',xn,Tn_wb,u_hat,'wingbox','shell',scale,sig_VM_wb*1e-6); % For wingbox elements
+saveas(f1, 'Figures/WBVonMises.eps','epsc')
+
+f2 = plotDeformed('wing',xn,Tn_rb,u_hat,'rib','shell',scale,sig_VM_rb*1e-6); % For rib elements
+saveas(f2, 'Figures/RibsVonMises.eps','epsc')
+
+f3 = plotDeformed('wing',xn,Tn_sk,u_hat,'skin','shell',scale,sig_VM_sk*1e-6); % For skin elements
+saveas(f3, 'Figures/SkinVonMises.eps','epsc')
+
+f4 = plotDeformed('wing',xn,Tn_st,u_hat,'stringer','beam',scale,sig_VM_st*1e-6); % For stringer elements
+saveas(f4, 'Figures/StringersVonMises.eps','epsc')
+
+
 
 % This function plots the deformed structure and Von Mises stress distribution: 
 % xn : Nodal coordinates matrix [Nnodes x 3]
