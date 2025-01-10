@@ -88,8 +88,8 @@ load('DATA/wing.mat','xn','Tn_st','Tm_st','Tn_wb','Tm_wb','Tn_rb','Tm_rb','Tn_sk
 %       |nx2 ny2 nz2 id2|   Last (fourth) column is the nodal index
 %       |      ...      |
 
-%% %%%%%%%%%%%%%%%%%%%%%%%%%%%% SOLVER %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%% MATRICES ASSEMBLY %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% %%%%%%%%%%%%%%%%%%%%%%%% MATRICES ASSEMBLY %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Obtain system matrices
 [~,Nel,NDOFs] = GetDiscretization(xn,Tn_st);
 
@@ -158,7 +158,7 @@ else
     M = M + M_wb*1e-10; % + M_wb + M_rb + M_sk;
 end
 
-%%%%%%%%%%%%%%%%%%%%%%%%%% BCS AND FORCES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% %%%%%%%%%%%%%%%%%%%%%%%% BCS AND FORCES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Define boundary conditions: Up, Fe, Pe, Be
 % Boundary conditions: Up
 [Up] = SetFixedBoundaryConditions(indRoot', [1,2,3,4,5,6]);
@@ -216,17 +216,13 @@ end
 
 % Compute external forces vector
 [f_hat] = ShellGlobForceVec(xn,Tn_wb,Fe,Pe,Be,Me_wb,S4_wb,R_wb,N_wb);
-
-%%%%%%%%%%%%%%%%%%%%%%%%%% SOLVER %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Solve system
+ 
+%% %%%%%%%%%%%%%%%%%%%%%%%% EQ SOLVER %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Static system solution
 u_hat(If,1) = K(If,If)\(f_hat(If,1)-(K(If,Ip)*u_hat(Ip,1)));
 fr = K*u_hat - f_hat;
 
-% Perform modal analysis
-Nm = 10; % 
-omega = 0;
-Im=1:6;
-[U_Freq,U_ast,frequencies, phi] = FrequencyAnalysis(Nm,Im,xn,Tn_st,Fe,Be,Pe,omega,Ip,If,M,K,f_hat);
+
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%% POSTPROCESS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 [eps_a,eps_s,eps_t,eps_b,sig_VM_st] = BeamPostprocess(xn,Tn_st,Tm_st,m_beam,Ba_st,Bs_st,Bt_st,Bb_st,Ke_st,R_st,u_hat,d_st);
@@ -250,6 +246,7 @@ u_y1(:,1) = u_hat(6*indSpar1-4);
 u_y2(:,1) = u_hat(6*indSpar2-4);
 
 
+
 theta_x = (u_z2-u_z1)./(y2-y1);
 u_z_bar = u_z1+theta_x.*(yc-y1);
 u_y_bar = (u_y1+u_y2)/2;
@@ -257,6 +254,7 @@ u_y_bar = (u_y1+u_y2)/2;
 
 
 %% %%%%%% PLOTS 1 %%%%%%
+
 % Uz
 figure
 plot(spar_x1,u_z_bar)
@@ -277,19 +275,6 @@ xlim([0,12])
 grid minor;
 saveas(gcf, 'Figures/ThetaWind.eps','epsc')
 
-% imodes = [1,2,3,4,5,6];
-% plotModes('wing',phi,frequencies,imodes)
-%plotModes('wing',Phi,freq,imodes)
-% This function plots the specified modes resulting from a modal analysis
-% in sets of 9.
-% Phi : Modal displacements matrix in which each column corresponds to the
-%       mode shape of the corresponding mode. Expected dimensions [Ndof x Nmodes]
-% freq : Natural frequencies array. Expected dimensions [Nmodes x 1]
-% imodes : Array selecting which modes to plot. A maximum of 9 modes must
-%          can be selected. Example: imodes = [1,2,3,4,5,6,7,8,9] will plot
-%          the modes stored in the first 9 columns of Phi / imodes = [1,4,5,10] 
-%          will plot modes in columns 1, 4, 5 and 10 of Phi. 
-
 %% PLOTS 2
 % Additional plot functions useful to visualize 3D model and modes
 close all
@@ -307,15 +292,22 @@ f4 = plotDeformed('wing',xn,Tn_st,u_hat,'stringer','beam',scale,sig_VM_st*1e-6);
 saveas(f4, 'Figures/StringersVonMises.eps','epsc')
 
 
+%% PLOTS 3
+% Perform modal analysis
+Nm = 15; % 
+omega = frequencies;
+Im = 1:6;
+[U_freq,U_ast,frequencies,phi] = FrequencyAnalysis(Nm,Im,xn,Tn_st,Fe,Be,Pe,omega,Ip,If,M,K,f_hat);
 
-% This function plots the deformed structure and Von Mises stress distribution: 
-% xn : Nodal coordinates matrix [Nnodes x 3]
-% Tn : Nodal connectivities matrix [Nelem x 4]
-% u : Displacements vector obtained from the system solution. It is expected
-%     to be given as a column vector with dimensions [Ndof x 1].
-% scale : Scale factor to amplify the displacements (set to appropriate 
-%         number to visualize the deformed structure properly).
-% sigVM : Von Mises stress at each Gauss point. It is expected to be given as 
-%         a matrix with dimensions [Nelem x Ngauss].
+% To displacements
+[u_z_ast,u_y_ast,theta_x_ast] = UtoDisplacements(U_ast,indSpar1, indSpar2,y1,y2,yc);
+[u_z_freq,u_y_freq,theta_x_freq] = UtoDisplacements(U_freq,indSpar1, indSpar2,y1,y2,yc);
+
+
+
+ 
+
+plotReducedModes(u_z_ast,u_y_ast,theta_x_ast,Im,frequencies,spar_x1,sprintf("Reduced order projection of $U_{ast}$ to the first %i modes",length(Im)),'Ast')
+plotReducedModes(u_z_freq-u_z_ast,u_y_freq-u_y_ast,theta_x_freq-theta_x_ast,Im,frequencies,spar_x1,sprintf("Error of reduced order projection to the first %i modes",length(Im)),'Error')
 
 

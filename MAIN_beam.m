@@ -208,6 +208,7 @@ ylabel("Modal displacements $\Phi(\theta_x)$", 'Interpreter', 'latex');
 legend(modes_legend{modes},'Interpreter',"latex");
 fontsize(20,"points")
 colororder(["#FF00FF";"#AAAA00";"#000000";"#0000FF";"#FF0000";"#00FF00"])
+
 %% Maximum displacement vs frequency
 % for f = 1:Nw
 %     max_displ(f,1) = max(abs(ud_(:, f, 1)));

@@ -221,8 +221,8 @@ u_hat(If,1) = K(If,If)\(f_hat(If,1)-(K(If,Ip)*u_hat(Ip,1)));
 fr = K*u_hat - f_hat;
 
 % Perform modal analysis
-Nm = 10; % 
-omega = 1:50;
+Nm = 100; % 
+omega = 1:500;
 Im=1:10;
 [U_Freq,U_ast,frequencies, phi] = FrequencyAnalysis(Nm,Im,xn,Tn_st,Fe,Be,Pe,omega,Ip,If,M,K,f_hat);
 
@@ -278,7 +278,6 @@ title("Loaded wing deflection ($u_z$) along the span",'Interpreter',"latex");
 xlabel("x [m]",'Interpreter',"latex");
 ylabel("$u_z$ [m]",'Interpreter',"latex");
 grid minor;
-fontsize(20,"points")
 % saveas(gcf, 'Figures/UzBendingWingUnit.eps','epsc')
 saveas(gcf, 'Figures/UzTorsionWingUnitSkinWB.eps','epsc')
 
@@ -289,7 +288,6 @@ title("Loaded wing twist angle ($\theta_x$) along the span",'Interpreter',"latex
 xlabel("x [m]",'Interpreter',"latex");
 ylabel("$\theta_x$ [rad]",'Interpreter',"latex");
 grid minor;
-fontsize(20,"points")
 % saveas(gcf, 'Figures/UzTwistWingUnit.eps','epsc')
 saveas(gcf, 'Figures/thetaTorsionWingUnitSkinWB.eps','epsc')
 
@@ -319,7 +317,6 @@ title(sprintf("First %i modal displacements",length(modes)))
 xlabel("x [m]", 'Interpreter', 'latex');
 ylabel("Modal displacements $\Phi(u_y)$", 'Interpreter', 'latex');
 legend(modes_legend{modes},'Interpreter',"latex");
-fontsize(16,"points")
 colororder(["#FF00FF";"#AAAA00";"#000000";"#0000FF";"#FF0000";"#00FF00"])
 saveas(gcf, 'Figures/ModesWingUnitUy.eps','epsc')
 
@@ -333,7 +330,6 @@ title(sprintf("First %i modal displacements",length(modes)))
 xlabel("x [m]", 'Interpreter', 'latex');
 ylabel("Modal displacements $\Phi(u_z)$", 'Interpreter', 'latex');
 legend(modes_legend{modes},'Interpreter',"latex");
-fontsize(16,"points")
 colororder(["#FF00FF";"#AAAA00";"#000000";"#0000FF";"#FF0000";"#00FF00"])
 saveas(gcf, 'Figures/ModesWingUnitUz.eps','epsc')
 
@@ -347,7 +343,6 @@ title(sprintf("First %i modal displacements",length(modes)))
 xlabel("x [m]", 'Interpreter', 'latex');
 ylabel("Modal displacements $\Phi(\theta_x)$", 'Interpreter', 'latex');
 legend(modes_legend{modes},'Interpreter',"latex");
-fontsize(16,"points")
 colororder(["#FF00FF";"#AAAA00";"#000000";"#0000FF";"#FF0000";"#00FF00"])
 saveas(gcf, 'Figures/ModesWingUnitTheta.eps','epsc')
 
