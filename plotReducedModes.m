@@ -1,5 +1,6 @@
 function plotReducedModes(u_z,u_y,theta_x,Im,frequencies,spar_x,g_title,type)
 
+frequencies = [0,frequencies]
 
 if strcmp(type,'Error')
     ylabn = 'error';
@@ -14,7 +15,7 @@ end
 % Modes uz ast
 figure
 hold on
-for i = Im
+for i = frequencies+1
     plot(spar_x, u_z(:,i));
 end
 grid minor;
@@ -29,7 +30,7 @@ saveas(gcf, sprintf('Figures/ReducedWingTunnelUz%s.eps',type),'epsc')
 % Modes uy ast
 figure
 hold on
-for i = Im
+for i = frequencies+1
     plot(spar_x, u_y(:,i));
 end
 grid minor;
@@ -43,7 +44,7 @@ saveas(gcf, sprintf('Figures/ReducedWingTunnelUy%s.eps',type),'epsc')
 % Modes theta ast
 figure
 hold on
-for i = Im
+for i = frequencies+1
     plot(spar_x, theta_x(:,i));
 end
 grid minor;

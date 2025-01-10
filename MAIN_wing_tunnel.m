@@ -294,8 +294,8 @@ saveas(f4, 'Figures/StringersVonMises.eps','epsc')
 
 %% PLOTS 3
 % Perform modal analysis
-Nm = 15; % 
-omega = frequencies;
+Nm = 20; % 
+omega = 1:100;
 Im = 1:6;
 [U_freq,U_ast,frequencies,phi] = FrequencyAnalysis(Nm,Im,xn,Tn_st,Fe,Be,Pe,omega,Ip,If,M,K,f_hat);
 
@@ -303,11 +303,11 @@ Im = 1:6;
 [u_z_ast,u_y_ast,theta_x_ast] = UtoDisplacements(U_ast,indSpar1, indSpar2,y1,y2,yc);
 [u_z_freq,u_y_freq,theta_x_freq] = UtoDisplacements(U_freq,indSpar1, indSpar2,y1,y2,yc);
 
+%%
+I = 1:max(Im)+1
+frequencies = frequencies(Im)
 
-
- 
-
-plotReducedModes(u_z_ast,u_y_ast,theta_x_ast,Im,frequencies,spar_x1,sprintf("Reduced order projection of $U_{ast}$ to the first %i modes",length(Im)),'Ast')
-plotReducedModes(u_z_freq-u_z_ast,u_y_freq-u_y_ast,theta_x_freq-theta_x_ast,Im,frequencies,spar_x1,sprintf("Error of reduced order projection to the first %i modes",length(Im)),'Error')
+plotReducedModes(u_z_ast,u_y_ast,theta_x_ast,I,round(frequencies),spar_x1,sprintf("Reduced order projection of $U_{ast}$ to the first %i modes",length(Im)),'Ast')
+plotReducedModes(u_z_freq-u_z_ast,u_y_freq-u_y_ast,theta_x_freq-theta_x_ast,I,round(frequencies),spar_x1,sprintf("Error of reduced order projection to the first %i modes",length(Im)),'Error')
 
 

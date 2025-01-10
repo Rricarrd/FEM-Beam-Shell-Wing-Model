@@ -23,7 +23,7 @@ for k = 1:Nw
 end
 
 % 3.1 Solve system of equations
-if Nw < 50
+if Nw < 120
     for k=1:size(F,2)
         U(If,k) =(K(If,If)-omega(k)^2*M(If,If))\(F(If,k)-(K(If,Ip)-omega(k)^2*M(If,Ip))*U(Ip,k));
     end
