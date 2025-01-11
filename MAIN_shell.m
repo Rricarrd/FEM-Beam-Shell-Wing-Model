@@ -106,6 +106,9 @@ Pe = [];
 % Shell Boundary conditions
 [u_hat,If,Ip] = BoundaryConditions(xn,Tn,Up);
 
+% Compute external forces vector
+[f_hat] = ShellGlobForceVec(xn,Tn,Fe,Pe,Be,Me,S4,R,N);
+
 % Perform modal analysis
 Nm = 10;
 omega = 1:50;
@@ -117,8 +120,7 @@ for i = 1:Nm
     modes_legend{i} = sprintf("Mode %i, $f = %.2f Hz$",i,frequencies(i));
 end
 
-% Compute external forces vector
-[f_hat] = ShellGlobForceVec(xn,Tn,Fe,Pe,Be,Me,S4,R,N);
+
 
 % Solve system
 u_hat(If,1) = K(If,If)\(f_hat(If,1)-(K(If,Ip)*u_hat(Ip,1)));

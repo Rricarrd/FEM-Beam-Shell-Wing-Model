@@ -277,25 +277,25 @@ saveas(gcf, 'Figures/ThetaWind.eps','epsc')
 
 %% PLOTS 2
 % Additional plot functions useful to visualize 3D model and modes
-close all
+%close all
 scale=20;
 f1 = plotDeformed('wing',xn,Tn_wb,u_hat,'wingbox','shell',scale,sig_VM_wb*1e-6); % For wingbox elements
-saveas(f1, 'Figures/WBVonMises.eps','epsc')
+saveas(f1, 'Figures/WBVonMises.eps','epsc');
 
 f2 = plotDeformed('wing',xn,Tn_rb,u_hat,'rib','shell',scale,sig_VM_rb*1e-6); % For rib elements
-saveas(f2, 'Figures/RibsVonMises.eps','epsc')
+saveas(f2, 'Figures/RibsVonMises.eps','epsc');
 
 f3 = plotDeformed('wing',xn,Tn_sk,u_hat,'skin','shell',scale,sig_VM_sk*1e-6); % For skin elements
-saveas(f3, 'Figures/SkinVonMises.eps','epsc')
+saveas(f3, 'Figures/SkinVonMises.eps','epsc');
 
 f4 = plotDeformed('wing',xn,Tn_st,u_hat,'stringer','beam',scale,sig_VM_st*1e-6); % For stringer elements
-saveas(f4, 'Figures/StringersVonMises.eps','epsc')
+saveas(f4, 'Figures/StringersVonMises.eps','epsc');
 
 
 %% PLOTS 3
 % Perform modal analysis
 Nm = 20; % 
-omega = 1:100;
+omega = 0:100;
 Im = 1:6;
 [U_freq,U_ast,frequencies,phi] = FrequencyAnalysis(Nm,Im,xn,Tn_st,Fe,Be,Pe,omega,Ip,If,M,K,f_hat);
 
@@ -304,8 +304,8 @@ Im = 1:6;
 [u_z_freq,u_y_freq,theta_x_freq] = UtoDisplacements(U_freq,indSpar1, indSpar2,y1,y2,yc);
 
 %%
-I = 1:max(Im)+1
-frequencies = frequencies(Im)
+I = 1:max(Im)+1;
+frequencies = frequencies(Im);
 
 plotReducedModes(u_z_ast,u_y_ast,theta_x_ast,I,round(frequencies),spar_x1,sprintf("Reduced order projection of $U_{ast}$ to the first %i modes",length(Im)),'Ast')
 plotReducedModes(u_z_freq-u_z_ast,u_y_freq-u_y_ast,theta_x_freq-theta_x_ast,I,round(frequencies),spar_x1,sprintf("Error of reduced order projection to the first %i modes",length(Im)),'Error')

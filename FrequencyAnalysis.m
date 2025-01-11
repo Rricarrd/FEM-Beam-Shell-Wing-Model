@@ -15,20 +15,21 @@ function [U,U_ast,frequencies, phi] = FrequencyAnalysis(Nm,Im,xn,Tn,Fe,Be,Pe,ome
 
 % 2.1 Initialization
 Nw = length(omega);
-F = zeros(NDOFs,Nw);
 U = zeros (NDOFs,Nw);
 
-for k = 1:Nw
-    F(:,k)=f_hat;
-end
+% Assume for all frequencies that amplitude is equal
+
+F=repmat(f_hat,1,Nw);
 
 % 3.1 Solve system of equations
+tStart = tic ;
 if Nw < 120
     for k=1:size(F,2)
         U(If,k) =(K(If,If)-omega(k)^2*M(If,If))\(F(If,k)-(K(If,Ip)-omega(k)^2*M(If,Ip))*U(Ip,k));
     end
 end
-
+tEnd = toc(tStart);
+fprintf("Time for the direct computation: %f\n",tEnd);
 % 4. Modal Analysis
 % 4.1 Solve eigenvalue problem
 % Make sure matrices are symmetric
@@ -54,12 +55,14 @@ U_ast = zeros (NDOFs,Nw);
 
 % 5.2 Projecting the system to the modes
 % System response U_ast considering the first Im modes for each frequency omega(k)
+tStart = tic ;
 for k=1:size(F,2) % columns of F
     for j=1:length(Im)
         alpha(j,k) = phi(:,Im(j))'*F(:,k)/(lambda(j)-omega(k)^2); % Modal amplitude
         U_ast(:,k) = U_ast(:,k) + phi(:,Im(j))*alpha(j,k); % Reduced order displacements [Ndofs x Nw]
     end
 end
-
+tEnd = toc(tStart);
+fprintf("Time for the reduced order computation: %f\n",tEnd);
 end
 

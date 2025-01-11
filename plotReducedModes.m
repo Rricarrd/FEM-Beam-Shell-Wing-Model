@@ -1,6 +1,6 @@
 function plotReducedModes(u_z,u_y,theta_x,Im,frequencies,spar_x,g_title,type)
 
-frequencies = [0,frequencies]
+frequencies = [0,frequencies];
 
 if strcmp(type,'Error')
     ylabn = 'error';

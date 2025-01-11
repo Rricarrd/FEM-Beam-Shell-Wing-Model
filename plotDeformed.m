@@ -17,7 +17,7 @@ y = y0+scale*u(2:6:end);
 z = z0+scale*u(3:6:end);
 
 % Initalize figure
-fig = figure
+fig = figure;
 hold on
 
 % Plot undeformed contour
